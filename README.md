@@ -28,3 +28,7 @@ Deadline - display when a task need to be completed by
 ### Framework/Libraries: Flask, VueJS, MySQL Connector
 Others: Docker
 
+
+## Backend Usage
+1. start the vitual environemnt by typing `python3 -m venv venv` in the `backend` folder
+
