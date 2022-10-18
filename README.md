@@ -30,5 +30,5 @@ Others: Docker
 
 
 ## Backend Usage
-1. start the vitual environemnt by typing `python3 -m venv venv` in the `backend` folder
+1. activate the vitual environemnt by typing `. venv/bin/activate` in the `backend` folder
 
