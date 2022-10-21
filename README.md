@@ -30,5 +30,7 @@ Others: Docker
 
 
 ## Backend Usage
-1. activate the vitual environemnt by typing `pip install -r requirements.txt`
-2. run `python3 server.py`
+1. Create virtual environment `python3 -m venv venv`
+2. activate virtual environment `source venv/bin/activate`
+3. install dependencies `python -m pip install -r requirements.txt`
+4. run `python3 server.py`

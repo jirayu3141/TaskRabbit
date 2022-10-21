@@ -54,6 +54,18 @@ def get_list():
     })
 
 
+@app.route("/list", methods=['POST'])
+def get_task():
+    task_sample = [
+        {'taskId': 1, 'taskName': "item1", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True},
+        {'taskId': 2, 'taskName': "item2", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True},
+        {'taskId': 3, 'taskName': "item3", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True}]
+
+    return jsonify({
+        'status': 0,
+        'tasks': task_sample,
+    })
+
 @ app.route("/createFolder", methods=['POST'])
 def create_folder():
     content = request.json
