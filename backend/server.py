@@ -1,7 +1,7 @@
 from distutils.log import debug
 from json import dumps
 from multiprocessing.sharedctypes import Value
-from flask import Flask, request
+from flask import Flask, request,jsonify
 from db_connections import *
 from werkzeug.exceptions import HTTPException
 from error_handling import InvalidAPIUsage
@@ -26,7 +26,33 @@ def test():
     return "<p>Test</p>"
 
 
-@app.route("/createFolder", methods=['POST'])
+@app.route("/home", methods=['POST'])
+def home():
+
+    folder_samples = [
+        {'folderId': 1, 'folderName': "folder1", 'folderColor': "#fcba03"},
+        {'folderId': 2, 'folderName': "folder2", 'folderColor': "#fcba03"},
+        {'folderId': 3, 'folderName': "folder3", 'folderColor': "#fcba03"}]
+
+    return jsonify({
+        'firstName': "Peter",
+        'folders': folder_samples,
+    })
+
+@app.route("/folder", methods=['POST'])
+def get_list():
+    list_samples = [
+        {'list_id': 1, 'list_name': "list1"},
+        {'list_id': 2, 'list_name': "list2"},
+        {'list_id': 3, 'list_name': "list3"}]
+
+    return jsonify({
+        'status': 0,
+        'lists': list_samples,
+    })
+
+
+@ app.route("/createFolder", methods=['POST'])
 def create_folder():
     content = request.json
     user_id = content['userId']
@@ -38,12 +64,13 @@ def create_folder():
         raise InvalidAPIUsage("Invalid userId")
 
     (status, folder_id) = write_folder(user_id, name, color)
-    return dumps({
+    return jsonify({
         'status': status,
         'folder_id': folder_id,
     })
 
-@app.route("/createList", methods=['POST'])
+
+@ app.route("/createList", methods=['POST'])
 def create_list():
     content = request.json
     user_id = content['userId']
@@ -55,7 +82,7 @@ def create_list():
         raise InvalidAPIUsage("Invalid userId")
 
     (status, list_id) = write_list(user_id, folder_id, list_name)
-    return dumps({
+    return jsonify({
         'status': status,
         'list_id': list_id,
     })

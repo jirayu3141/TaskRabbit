@@ -87,6 +87,5 @@ def write_list(user_id, folder_id, list_name):
         raise InvalidAPIUsage(format(err))
 
 if __name__ == "__main__":
-    db = init_db()
     write_list(1, 3, "listName")
     db.close()
