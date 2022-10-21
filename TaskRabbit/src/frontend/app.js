@@ -8,14 +8,13 @@ const app = Vue.createApp({
             title: 'TaskRabbit',
 
             tasks: [
-                {taskid: 0, description: 'water', is_completed: true, tag_id: 0, deadline: null},
-                {taskid: 1, description: 'chicken', is_completed: true, tag_id: 1, deadline: null},
-                {taskid: 2, description: 'bread', is_completed: false, tag_id: null, deadline: null},
-                {taskid: 3, description: 'salt', is_completed: false, tag_id: 2, deadline: null},
-                {taskid: 4, description: 'onions', is_completed: false, tag_id: 0, deadline: '12/2'},
+                {name: 'water', is_completed: true, tag: 'important', deadline: null},
+                {name: 'chicken', is_completed: false, tag: null, deadline: '12/2'},
+                {name: 'salt', is_completed: false, tag: 'important', deadline: '12/2'},
+
             ],
 
-            newTask: ''
+            newTask: '',
         }
     },
     methods:{
@@ -34,31 +33,17 @@ const app = Vue.createApp({
                 console.log(data);
             }
         },
-        onEnter: function() {
+        addTask() {
+            //allows user to add another task to their list
             console.log("task '%s' is sent\n", this.newTask);
-            this.tasks.push({taskid: 5, description: this.newTask, is_completed: false, tag_id: null, deadline: null});
+            this.tasks.push({name: this.newTask, is_completed: false, tag_id: null, deadline: null});
             this.newTask = ''; //set back to empty text field
             
-            //this.tasks.push(ntask);
+            //TODO: call backend to send in new task to database
          }, 
-         async created() {
+        async goHome() {
+            //test code to see if i can grab data from json
             console.log("going home");
-            // Simple POST request with a JSON body using fetch
-            
-            /*
-            const requestOptions = {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ title: "Vue POST Request Example" })
-            };
-
-            //fetch data from db
-            fetch("http://127.0.0.1:5000/home", requestOptions)
-              .then(response => console.log(response.json()))
-              
-            //  .then(data => (this.postId = data.id))
-              ;
-              */
               const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -73,21 +58,31 @@ const app = Vue.createApp({
 
 
           },
-          async getTasks() {
+        async getTasks() {
             console.log("getting all tasks in this list");
-              const requestOptions = {
+            const requestOptions = 
+            {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ title: "Vue POST Request Example" })
-              };
-              const response = await fetch("http://127.0.0.1:5000/list", requestOptions);
-              const data = await response.json();
-              this.postId = data.id;
-              console.log(data);
-              console.log(data.tasks[0].taskName);
-              this.title=data.tasks[0].taskName;
+            };
 
+            const response = await fetch("http://127.0.0.1:5000/list", requestOptions);
+            const data = await response.json();
+            this.postId = data.id;
+            console.log(data); //data object from 
 
+            console.log(data.tasks[0].taskName);
+
+            for (const e of data.tasks) 
+            { //iterate over all tasks and push to 'task' array
+                tmpTaskName = e.taskName;
+                tmpTaskIsCompleted = e.taskIsCompleted;
+                tmpTaskTag = e.taskTag;
+                tmpTaskDeadline = e.taskDeadline;
+                //push tasks to array
+                this.tasks.push({name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag_id: tmpTaskTag, deadline: tmpTaskDeadline});
+            }
 
           }
     

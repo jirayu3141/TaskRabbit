@@ -6,6 +6,20 @@
   <title>Document</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.30/vue.global.min.js"></script>
   <style>
+    .item1 { grid-area: check; }
+    .item2 { grid-area: main; }
+    .item3 { grid-area: footer; }
+    .item4 { grid-area: empty; }
+
+
+    .grid-container {
+      display: grid;
+      text-align: left;
+      grid-template-areas:
+        'check main main main'
+        'empty footer footer footer';
+    }
+    
     body {
       background: #eee;
       max-width: 960px;
@@ -14,12 +28,13 @@
     li {
       list-style-type: none;
       background: #fff;
+      max-width: 500px;
       margin: 10px auto;
-      padding: 5px 10px;
-      border-radius: 10px;
+      padding: 10px 10px;
+      border-radius: 20px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
     }
     
     .box {
@@ -35,23 +50,24 @@
 <body>
   <div id="app">
     <div v-if="showThings">
-        <h1 @click="getTasks()"> {{ title }}</h1>
+        <h1> {{ title }}</h1>
+        <button @click="getTasks()"> get all tasks</button>
         <!---loopthroughlist-->
         <ul>
-          <!---item in list[]-->
+          <!---item in tasks[]-->
           <li v-for="task in tasks">
-            <input type="checkbox" id="checkbox" v-model="task.is_completed">
-            <label for="checkbox">{{ task.description }} is {{task.is_completed}}</label>
-
-            <h3>{{ task.description }}</h3>
-            <p> {{ task.tag }} {{ task.deadline }}</p>
+            <!---TODO: tell backend refreshed data about task completion-->
+            <div class="grid-container">
+              <input class="item1" type="checkbox" id="checkbox" v-model="task.is_completed">
+              <div class="item2">{{  task.name }}</div>  
+              <sub class="item3">{{ task.tag }} {{ task.deadline }}</sub>
+            </div>
           </li>
+           <!---insert new task--->
+          <h2>New task is: {{ newTask }}</h2>
+          <input v-model="newTask" v-on:keyup.enter="addTask" placeholder="edit me" />
         </ul>
-
-        <!---insert new task--->>
-        <h3>New task is: {{ newTask }}</h3>
-	      <input v-model="newTask" v-on:keyup.enter="onEnter" placeholder="edit me" />
-
+       
     </div>
 
     <br>
