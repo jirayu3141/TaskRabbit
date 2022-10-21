@@ -30,5 +30,5 @@ Others: Docker
 
 
 ## Backend Usage
-1. activate the vitual environemnt by typing `. venv/bin/activate` in the `backend` folder
-
+1. activate the vitual environemnt by typing `pip install -r requirements.txt`
+2. run `python3 server.py`
