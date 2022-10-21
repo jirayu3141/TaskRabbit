@@ -72,6 +72,23 @@ const app = Vue.createApp({
 
 
 
+          },
+          async getTasks() {
+            console.log("getting all tasks in this list");
+              const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: "Vue POST Request Example" })
+              };
+              const response = await fetch("http://127.0.0.1:5000/list", requestOptions);
+              const data = await response.json();
+              this.postId = data.id;
+              console.log(data);
+              console.log(data.tasks[0].taskName);
+              this.title=data.tasks[0].taskName;
+
+
+
           }
     
     },
