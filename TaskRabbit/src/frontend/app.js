@@ -1,3 +1,5 @@
+/** '  python3 server.py  ' in terminal will start server  */
+
 const app = Vue.createApp({
     //data, function
 
