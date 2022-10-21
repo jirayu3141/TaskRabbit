@@ -1,18 +1,11 @@
 const app = Vue.createApp({
     //data, function
+
+    
     data() {
         return {
             showThings: true,
-            title: 'groceries',
-            number: 23,
-            one: 'apples',
-            two: 'milk',
-
-            books: [
-                {name: 'book', price: '$1.23'},
-                {name: 'plushy', price: '$2.23'},
-                {name: 'yo yo', price: '$0.23'},
-            ],
+            title: 'TaskRabbit',
 
             tasks: [
                 {taskid: 0, description: 'water', is_completed: true, tag_id: 0, deadline: null},
@@ -26,10 +19,9 @@ const app = Vue.createApp({
         }
     },
     methods:{
-        changeTitle(aa) {
-            console.log("you clicked me!!");
-            //to update variables, you need to ref this
-            this.title= aa
+        goHome() {
+            console.log("lets go to the home page!!");
+            //TODO: redirect user to home page
         },
         toggleShowThings() {
             console.log("want to see a magic trick?");
@@ -48,9 +40,43 @@ const app = Vue.createApp({
             this.newTask = ''; //set back to empty text field
             
             //this.tasks.push(ntask);
-         }
+         }, 
+         async created() {
+            console.log("going home");
+            // Simple POST request with a JSON body using fetch
+            
+            /*
+            const requestOptions = {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ title: "Vue POST Request Example" })
+            };
+
+            //fetch data from db
+            fetch("http://127.0.0.1:5000/home", requestOptions)
+              .then(response => console.log(response.json()))
+              
+            //  .then(data => (this.postId = data.id))
+              ;
+              */
+              const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: "Vue POST Request Example" })
+              };
+              const response = await fetch("http://127.0.0.1:5000/home", requestOptions);
+              const data = await response.json();
+              this.postId = data.id;
+              console.log(data);
+              console.log(data.firstName);
+
+
+
+          }
     
     },
+
+
 })
 app.mount('#app')
 
