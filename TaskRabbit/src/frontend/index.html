@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.30/vue.global.min.js"></script>
+  <style>
+    body {
+      background: #eee;
+      max-width: 960px;
+      margin: 20px auto;
+    }
+    li {
+      list-style-type: none;
+      background: #fff;
+      margin: 20px auto;
+      padding: 10px 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .box {
+    padding: 100px 0;
+    width: 400px;
+    text-align: center;
+    background: #ddd;
+    margin: 20px;
+    display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <h1>TaskRabbit</h1>
+  <div id="app">
+    <div v-if="showThings">
+
+        <p> I need to get {{number}} {{one}}s for today.</p>
+        <button v-on:click="number++"> add apples</button>
+        <button @click="number--"> sell apples</button>
+        <h1 @click="changeTitle('hatsune miku')"> CHANGE TITLE</h1>
+        <!---loopthroughlist-->
+        <ul>
+          <!---item in list[]-->
+          <li v-for="task in tasks">
+            <input type="checkbox" id="checkbox" v-model="task.is_completed">
+            <label for="checkbox">{{ task.description }} is {{task.is_completed}}</label>
+
+            <h3>{{ task.description }}</h3>
+            <p> {{ task.tag }} {{ task.deadline }}</p>
+          </li>
+        </ul>
+
+        <!---insert new task--->>
+        <h3>New task is: {{ newTask }}</h3>
+	      <input v-model="newTask" v-on:keyup.enter="onEnter" placeholder="edit me" />
+
+    </div>
+
+    <br>
+    <!---mouse events-->
+    <div class="box" @mouseover="handleEvent($event, 100)">mouseover</div>
+    <div class="box" @mouseleave="handleEvent">mouseleave</div>
+    <div class="box" @dblclick="handleEvent">double click</div>
+    <div class="box"></div>
+
+   
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
