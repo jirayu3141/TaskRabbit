@@ -1,10 +1,10 @@
 import mysql.connector
 import pwd
+from error_handling import InvalidAPIUsage
 
-def init_db():
-    return mysql.connector.connect(user='admin', password='tAirftr1!!',
-                                 host='taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com',
-                                 database='main')
+db = mysql.connector.connect(user='admin', password='tAirftr1!!',
+                            host='taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com',
+                            database='main')
 
 # TODO: make password a secret
 def get_all_users():
@@ -42,10 +42,6 @@ def get_all_folder():
     return cursor
 
 def write_folder(user_id, name, color):
-    db = mysql.connector.connect(user='admin', password='tAirftr1!!',
-                                 host='taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com',
-                                 database='main')
-
     try:
         cursor = db.cursor()
         # insert to folders table
@@ -65,11 +61,32 @@ def write_folder(user_id, name, color):
         db.close()
         return (0, written_folder_id)
     except mysql.connector.Error as err:
-        print("Something went wrong: {}".format(err))
-        return -1
+        raise InvalidAPIUsage(format(err))
     
+def write_list(user_id, folder_id, list_name):
+    try:
+        cursor = db.cursor()
+        # insert to folders table
+        sql = "INSERT INTO lists (list_id, list_name, folder_id) VALUES (%s, %s, %s)"
+        val = (0, list_name, folder_id)
+        cursor.execute(sql, val)
+        written_list_id = cursor.lastrowid
+        
+        # insert to user_folder table
+        print()
+        sql = "INSERT INTO user_folder (user_id, folder_id) VALUES (%s, %s)"
+        val = (user_id, cursor.lastrowid)
+        cursor.execute(sql, val)
+        
+        db.commit()
+        cursor.close()
+        db.close()
+        return (0, written_list_id)
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
 
 if __name__ == "__main__":
     db = init_db()
-    write_folder(1, "test", "red")
+    write_list(1, 3, "listName")
     db.close()

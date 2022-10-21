@@ -43,6 +43,22 @@ def create_folder():
         'folder_id': folder_id,
     })
 
+@app.route("/createList", methods=['POST'])
+def create_list():
+    content = request.json
+    user_id = content['userId']
+    folder_id = content['folderId']
+    list_name = content['listName']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    (status, list_id) = write_list(user_id, folder_id, list_name)
+    return dumps({
+        'status': status,
+        'list_id': list_id,
+    })
 
 
 if __name__ == "__main__":
