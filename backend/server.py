@@ -5,9 +5,10 @@ from flask import Flask, request,jsonify
 from db_connections import *
 from werkzeug.exceptions import HTTPException
 from error_handling import InvalidAPIUsage
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.errorhandler(InvalidAPIUsage)
 def invalid_api_usage(e):
@@ -36,7 +37,7 @@ def home():
 
     return jsonify({
         'firstName': "Peter",
-        'folders': folder_samples,
+        'folders': folder_sbamples,
     })
 
 @app.route("/folder", methods=['POST'])
@@ -89,4 +90,5 @@ def create_list():
 
 
 if __name__ == "__main__":
+    print("test")
     app.run(debug=True)
