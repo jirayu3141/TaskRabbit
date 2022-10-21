@@ -5,8 +5,10 @@ from flask import Flask, request,jsonify
 from db_connections import *
 from werkzeug.exceptions import HTTPException
 from error_handling import InvalidAPIUsage
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.errorhandler(InvalidAPIUsage)
