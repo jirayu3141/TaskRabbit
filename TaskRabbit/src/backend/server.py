@@ -66,6 +66,22 @@ def get_task():
         'tasks': task_sample,
     })
 
+
+@ app.route("/createTask", methods=['POST'])
+def create_task():
+    content = request.json
+    list_id = content['listId']
+    task_name = content['taskName']
+    task_deadline = content['taskDeadline']
+    task_tag = content['taskTag']
+
+
+    (status, task_id) = write_task(list_id, task_name, task_deadline, task_tag)
+    return jsonify({
+        'status': status,
+        'taskId': task_id,
+    })
+
 @ app.route("/createFolder", methods=['POST'])
 def create_folder():
     content = request.json

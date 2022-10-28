@@ -86,6 +86,29 @@ def write_list(user_id, folder_id, list_name):
         print("Something went wrong: {}".format(err))
         raise InvalidAPIUsage(format(err))
 
+
+def write_task(list_id, task_name, deadline, tag=0):
+    try:
+        cursor = db.cursor()
+        # insert to folders table
+        sql = "INSERT INTO tasks (task_id, description, is_completed, deadline, list_id, tag_id) VALUES (%s, %s, %s, %s, %s, %s)"
+        val = (0,  task_name, False, deadline, list_id, 1)
+        cursor.execute(sql, val)
+        written_list_id = cursor.lastrowid
+    
+        db.commit()
+        cursor.close()
+        db.close()
+        print("Write task complete")
+
+        ## todo: tag to tag_id
+
+        return (0, written_list_id)
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
+
+
 if __name__ == "__main__":
-    write_list(1, 3, "listName")
+    write_task(1, "testTask", "2022-01-25", 1)
     db.close()
