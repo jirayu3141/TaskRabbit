@@ -34,3 +34,7 @@ Others: Docker
 2. activate virtual environment `source venv/bin/activate`
 3. install dependencies `python -m pip install -r requirements.txt`
 4. run `python3 server.py`
+
+## Project usage
+1. Download 'Live Server' from Vscode marketplace
+2. Open the frontend webpage by clicking "Open with Live Server" on index.html
