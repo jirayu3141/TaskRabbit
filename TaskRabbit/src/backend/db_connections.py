@@ -1,18 +1,18 @@
+from asyncio import create_task
 import mysql.connector
 import pwd
 from error_handling import InvalidAPIUsage
 
 db = mysql.connector.connect(user='admin', password='tAirftr1!!',
-                            host='taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com',
-                            database='main')
+                             host='taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com',
+                             database='main')
 
 # TODO: make password a secret
-def get_all_users():
-    db = mysql.connector.connect(user='admin', password='tAirftr1!!',
-                                 host='taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com',
-                                 database='main')
 
+
+def get_all_users():
     # TODO: use try, except, finally when accessing the database
+    print('Attempting connection to DB')
     cursor = db.cursor()
     query = "SELECT * from users"
     cursor.execute(query)
@@ -24,10 +24,9 @@ def get_all_users():
     db.close()
     return cursor
 
+
 def get_all_folder():
-    db = mysql.connector.connect(user='admin', password='tAirftr1!!',
-                                 host='taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com',
-                                 database='main')
+    print('Attempting connection to DB')
 
     # TODO: use try, except, finally when accessing the database
     cursor = db.cursor()
@@ -40,8 +39,10 @@ def get_all_folder():
     cursor.close()
     db.close()
     return cursor
-def write_folder(user_id, name, color):
 
+
+def write_folder(user_id, name, color):
+    print('Attempting connection to DB')
     try:
         cursor = db.cursor()
         # insert to folders table
@@ -49,21 +50,23 @@ def write_folder(user_id, name, color):
         val = (0, name, color)
         cursor.execute(sql, val)
         written_folder_id = cursor.lastrowid
-        
+
         # insert to user_folder table
         print()
         sql = "INSERT INTO user_folder (user_id, folder_id) VALUES (%s, %s)"
         val = (user_id, cursor.lastrowid)
         cursor.execute(sql, val)
-        
+
         db.commit()
         cursor.close()
         db.close()
         return (0, written_folder_id)
     except mysql.connector.Error as err:
         raise InvalidAPIUsage(format(err))
-    
+
+
 def write_list(user_id, folder_id, list_name):
+    print('Attempting connection to DB')
     try:
         cursor = db.cursor()
         # insert to folders table
@@ -71,13 +74,13 @@ def write_list(user_id, folder_id, list_name):
         val = (0, list_name, folder_id)
         cursor.execute(sql, val)
         written_list_id = cursor.lastrowid
-        
+
         # insert to user_folder table
         print()
         sql = "INSERT INTO user_folder (user_id, folder_id) VALUES (%s, %s)"
         val = (user_id, cursor.lastrowid)
         cursor.execute(sql, val)
-        
+
         db.commit()
         cursor.close()
         db.close()
@@ -88,20 +91,24 @@ def write_list(user_id, folder_id, list_name):
 
 
 def write_task(list_id, task_name, deadline, tag=0):
+    print('Attempting connection to DB')
     try:
         cursor = db.cursor()
         # insert to folders table
         sql = "INSERT INTO tasks (task_id, description, is_completed, deadline, list_id, tag_id) VALUES (%s, %s, %s, %s, %s, %s)"
         val = (0,  task_name, False, deadline, list_id, 1)
         cursor.execute(sql, val)
+        
+        print(cursor.statement)
+
         written_list_id = cursor.lastrowid
-    
+
         db.commit()
         cursor.close()
-        db.close()
+        # db.close()
         print("Write task complete")
 
-        ## todo: tag to tag_id
+        # todo: tag to tag_id
 
         return (0, written_list_id)
     except mysql.connector.Error as err:
@@ -109,6 +116,30 @@ def write_task(list_id, task_name, deadline, tag=0):
         raise InvalidAPIUsage(format(err))
 
 
+def get_tasks(user_id, list_id):
+    print('Attempting connection to DB')
+    try:
+        cursor = db.cursor()
+
+        query = "SELECT * from tasks WHERE list_id = %s"
+        cursor.execute(query, (list_id,))
+
+        task = []
+
+        for (task_id, description, is_completed, deadline, list_id, tag_id) in cursor:
+            task.append({'taskId': task_id, 'taskName': description, 'taskIsCompleted': is_completed,
+                        'taskDeadline': deadline, 'taskTag': ''})
+
+        cursor.close()
+        db.close()
+        print("query complete")
+        return task
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
+
+
 if __name__ == "__main__":
-    write_task(1, "testTask", "2022-01-25", 1)
+    write_task(1, "test", "test", 0)
+    # get_tasks(1, 1)
     db.close()
