@@ -131,7 +131,7 @@ def get_tasks(user_id, list_id):
                         'taskDeadline': deadline, 'taskTag': ''})
 
         cursor.close()
-        db.close()
+        # db.close()
         print("query complete")
         return task
     except mysql.connector.Error as err:
