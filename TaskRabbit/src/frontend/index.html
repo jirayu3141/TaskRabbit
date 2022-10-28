@@ -11,7 +11,6 @@
     .item3 { grid-area: footer; }
     .item4 { grid-area: empty; }
 
-
     .grid-container {
       display: grid;
       text-align: left;
@@ -49,26 +48,28 @@
 </head>
 <body>
   <div id="app">
-    <div v-if="showThings">
-        <h1> {{ title }}</h1>
-        <button @click="getTasks()"> get all tasks</button>
-        <!---loopthroughlist-->
-        <ul>
-          <!---item in tasks[]-->
-          <li v-for="task in tasks">
-            <!---TODO: tell backend refreshed data about task completion-->
-            <div class="grid-container">
-              <input class="item1" type="checkbox" id="checkbox" v-model="task.is_completed">
-              <div class="item2">{{  task.name }}</div>  
-              <sub class="item3">{{ task.tag }} {{ task.deadline }}</sub>
-            </div>
-          </li>
-           <!---insert new task--->
-          <h2>New task is: {{ newTask }}</h2>
-          <input v-model="newTask" v-on:keyup.enter="addTask" placeholder="edit me" />
-        </ul>
-       
-    </div>
+    <h1> {{ title }}</h1>
+    <button @click="toggleShowTasks()"> SHOW TASKS</button>
+      <div v-if="showTasks">
+          <!---loopthroughlist-->
+          <ul>
+            <!---item in tasks[]-->
+            <li v-for="task in tasks">
+              <!---TODO: tell backend refreshed data about task completion-->
+              <div class="grid-container">
+                <input class="item1" type="checkbox" id="checkbox" v-model="task.is_completed">
+                <div class="item2">{{  task.name }}</div>  
+                <sub class="item3">{{ task.tag }} {{ task.deadline }}</sub>
+              </div>
+            </li>
+            <!---insert new task--->
+            <h2>New task is: {{ newTask }}</h2>
+            <input v-model="newTask" v-on:keyup.enter="addTask" placeholder="edit me" />
+            <input v-model="newTag" v-on:keyup.enter="addTask" placeholder="edit tag" />
+            <input v-model="newDeadline" v-on:keyup.enter="addTask" placeholder="edit deadline" />
+
+          </ul>
+        </div>
 
     <br>
     <!---mouse events-->

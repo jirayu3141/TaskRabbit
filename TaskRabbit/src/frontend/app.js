@@ -1,4 +1,6 @@
 /** '  python3 server.py  ' in terminal will start server  */
+//pip install mysql-connector-python
+//pip install -U flask-cors
 
 const app = Vue.createApp({
     //data, function
@@ -6,8 +8,13 @@ const app = Vue.createApp({
     
     data() {
         return {
-            showThings: true,
+            showTasks: false,
             title: 'TaskRabbit',
+
+            //var section for creating a new task
+            newTask: '',
+            newTag:'',
+            newDeadline:'',
 
             tasks: [
                 {name: 'water', is_completed: true, tag: 'important', deadline: null},
@@ -15,8 +22,6 @@ const app = Vue.createApp({
                 {name: 'salt', is_completed: false, tag: 'important', deadline: '12/2'},
 
             ],
-
-            newTask: '',
         }
     },
     methods:{
@@ -24,9 +29,13 @@ const app = Vue.createApp({
             console.log("lets go to the home page!!");
             //TODO: redirect user to home page
         },
-        toggleShowThings() {
-            console.log("want to see a magic trick?");
-            this.showThings = !this.showThings;
+        toggleShowTasks() {
+            console.log("show me my tasks");
+            //don't grab task from backend twice
+            if (!this.showTasks) {
+                this.getTasks();
+                this.showTasks = !this.showTasks;
+            }
         },
         handleEvent(e, data) {
             //can take in undefined args ex. data
@@ -38,8 +47,11 @@ const app = Vue.createApp({
         addTask() {
             //allows user to add another task to their list
             console.log("task '%s' is sent\n", this.newTask);
-            this.tasks.push({name: this.newTask, is_completed: false, tag_id: null, deadline: null});
-            this.newTask = ''; //set back to empty text field
+            this.tasks.push({name: this.newTask, is_completed: false, tag: this.newTag, deadline: this.newDeadline});
+            //set back to empty text field
+            this.newTask = ''; 
+            this.newTag = ''; 
+            this.newDeadline = ''; 
             
             //TODO: call backend to send in new task to database
          }, 
@@ -85,6 +97,8 @@ const app = Vue.createApp({
                 //push tasks to array
                 this.tasks.push({name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag_id: tmpTaskTag, deadline: tmpTaskDeadline});
             }
+
+
 
           }
     
