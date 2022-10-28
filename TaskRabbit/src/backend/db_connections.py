@@ -40,8 +40,8 @@ def get_all_folder():
     cursor.close()
     db.close()
     return cursor
-
 def write_folder(user_id, name, color):
+
     try:
         cursor = db.cursor()
         # insert to folders table

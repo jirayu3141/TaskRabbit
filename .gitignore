@@ -2,3 +2,4 @@ backend/venv/
 backend/__pycache__/
 TaskRabbit/src/backend/venv/
 TaskRabbit/src/backend/__pycache__/
+TaskRabbit/src/backend/env/
