@@ -11,8 +11,6 @@ const app = Vue.createApp({
     data() {
         return {
             showTasks: false,
-            showFoldes: false,
-
             title: 'TaskRabbit',
 
             /*HOME */
@@ -26,6 +24,7 @@ const app = Vue.createApp({
 
             /*TASKS */
             hideCompleted: false,
+            taskId: 1,
             newTaskName: '',
             newTaskTag: '',
             newTaskDeadline: '',
@@ -38,25 +37,14 @@ const app = Vue.createApp({
           return this.hideCompleted
             ? this.tasks.filter((t) => !t.is_completed)
             : this.tasks
-        }
+        },
+
+
     },
     methods:{
         goHome() {
             console.log("lets go to the home page!!");
             //TODO: redirect user to home page
-        },
-        toggleShowFolders() {
-            console.log("show me my folders");
-            //don't grab task from backend twice
-            if (!this.showFolders) {
-                this.getFolders();
-            }
-            else {
-                //remove all data from local task array
-                this.folder.splice(0);
-            }
-            this.showFolders = !this.showFolders;
-
         },
         async getFolders() {
             console.log("getting all folders from this user");
@@ -169,6 +157,10 @@ const app = Vue.createApp({
           }, 
     
     }, 
+    mounted() {
+        //immediatly get the folders from home
+        this.getFolders();
+      },
 
 
 })
