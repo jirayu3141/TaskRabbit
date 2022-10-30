@@ -1,27 +1,43 @@
 /** '  python3 server.py  ' in terminal will start server  */
 //pip install mysql-connector-python
 //pip install -U flask-cors
-//npm install --save axios vue-axios
 const app = Vue.createApp({
-    //data, function
-
+    //TODO: ckeck w backend on tag and deadline parsing
+    //TODO: edit and delete tasks
+    //TODO: make funtioning web
+    //TODO: navigaiton
+    //TODO: seperate functions into dif files
     
     data() {
         return {
             showTasks: false,
+            showFoldes: false,
+
             title: 'TaskRabbit',
 
-            //var section for creating a new task
-            newTask: '',
-            newTag:'',
-            newDeadline:'',
+            /*HOME */
+            newFolderName: '',
+            newFolderColor: '',
+            folders: [],
 
-            tasks: [
-                {name: 'water', is_completed: true, tag: 'important', deadline: null},
-                {name: 'chicken', is_completed: false, tag: null, deadline: '12/2'},
-                {name: 'salt', is_completed: false, tag: 'important', deadline: '12/2'},
+            /*FOLDER */
+            newListName: '',
+            lists: [],
 
-            ],
+            /*TASKS */
+            hideCompleted: false,
+            newTaskName: '',
+            newTaskTag: '',
+            newTaskDeadline: '',
+            tasks: [],
+        }
+    },
+    computed: {
+        //filter the todo list to either show completed tasks or not
+        filteredTasks() {
+          return this.hideCompleted
+            ? this.tasks.filter((t) => !t.is_completed)
+            : this.tasks
         }
     },
     methods:{
@@ -29,23 +45,66 @@ const app = Vue.createApp({
             console.log("lets go to the home page!!");
             //TODO: redirect user to home page
         },
+        toggleShowFolders() {
+            console.log("show me my folders");
+            //don't grab task from backend twice
+            if (!this.showFolders) {
+                this.getFolders();
+            }
+            else {
+                //remove all data from local task array
+                this.folder.splice(0);
+            }
+            this.showFolders = !this.showFolders;
+
+        },
+        async getFolders() {
+            console.log("getting all folders from this user");
+            const requestOptions = 
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 0, //todo: user auth
+                    listId: 0
+                })
+            };
+
+            const response = await fetch("http://127.0.0.1:5000/home", requestOptions);
+            const data = await response.json();
+            this.postId = data.id;
+            console.log(data); //data object from 
+
+            for (const e of data.folders) 
+            { //iterate over all tasks and push to 'task' array
+                tmpFolderId = e.folderId;
+                tmpFolderName = e.folderName;
+                tmpFolderColor = e.folderColor;
+                //push tasks to array
+                this.folders.push({id: tmpFolderId, name: tmpFolderName, color: tmpFolderColor});
+            }
+
+        },
+
+
+        /*TASKS */
         toggleShowTasks() {
             console.log("show me my tasks");
             //don't grab task from backend twice
-            this.getTasks();
-                this.showTasks = !this.showTasks;
-        },
-        handleEvent(e, data) {
-            //can take in undefined args ex. data
-            console.log("event", e, e.type);
-            if (data) {
-                console.log(data);
+            if (!this.showTasks) {
+                this.getTasks();
             }
-        },
+            else {
+                //remove all data from local task array
+                this.tasks.splice(0);
+            }
+            this.showTasks = !this.showTasks;
+
+        }, 
         async addTask() {
             //allows user to add another task to their list
-            console.log("task '%s' is sent\n", this.newTask);
-            this.tasks.push({name: this.newTask, is_completed: false, tag: this.newTag, deadline: this.newDeadline});
+            console.log("task '%s' is sent\n", this.newTaskName);
+            this.tasks.push({name: this.newTaskName, is_completed: false, tag: this.newTaskTag, deadline: this.newTaskDeadline});
             
             
             //TODO: call backend to send in new task to database
@@ -56,9 +115,9 @@ const app = Vue.createApp({
                 body: JSON.stringify({ 
                     userId: 0, //todo: user auth
                     listId: 0,
-                    taskName: this.newTask, 
-                    taskTag: this.newTag, 
-                    taskDeadline: this.newDeadline
+                    taskName: this.newTaskName, 
+                    taskTag: this.newTaskTag, 
+                    taskDeadline: this.newTaskDeadline
                 })
             };
             const response = await fetch("http://127.0.0.1:5000/createTask", requestOptions);
@@ -67,11 +126,17 @@ const app = Vue.createApp({
 
 
             //set back to empty text field
-            this.newTask = ''; 
-            this.newTag = ''; 
-            this.newDeadline = ''; 
+            this.newTaskName = ''; 
+            this.newTaskTag = ''; 
+            this.newTaskDeadline = ''; 
 
          }, 
+        async deleteTask(task) {
+            //delete a specific task from the list
+            this.tasks = this.tasks.filter((t) => t !== task);
+
+            //TODO: backend delete from db
+        },
         async getTasks() {
             console.log("getting all tasks in this list");
             const requestOptions = 
