@@ -51,24 +51,8 @@
   <div id="app">
     <div v-if="showThings">
         <h1> {{ title }}</h1>
-        <a href="folder.html">
-          <button @click="addFolder()">create folder</button>
-        </a>
-        <button @click="getTasks()"> get all tasks</button>
-        <!---loopthroughlist-->
-        <ul>
-          <!---item in tasks[]-->
-          <li v-for="task in tasks">
-            <!---TODO: tell backend refreshed data about task completion-->
-            <div class="grid-container">
-              <input class="item1" type="checkbox" id="checkbox" v-model="task.is_completed">
-              <div class="item2">{{  task.name }}</div>  
-              <sub class="item3">{{ task.tag }} {{ task.deadline }}</sub>
-            </div>
-          </li>
-           <!---insert new task--->
-          <h2>New task is: {{ newTask }}</h2>
-          <input v-model="newTask" v-on:keyup.enter="addTask" placeholder="edit me" />
+          <h2>Folder name: {{ newFolder }}</h2>
+          <input v-model="newFolder" v-on:keyup.enter="addFolder" placeholder="enter name" />
         </ul>
        
     </div>

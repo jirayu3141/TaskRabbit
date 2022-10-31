@@ -15,8 +15,19 @@ const app = Vue.createApp({
                 {name: 'salt', is_completed: false, tag: 'important', deadline: '12/2'},
 
             ],
-
             newTask: '',
+
+            folders: [
+                {name: 'CS 348', folder_color: null},
+                {name: 'CS 252', folder_color: null},
+                {name: 'SOC 100', folder_color: null},
+
+
+            ], 
+
+            newFolder: '',
+
+            
         }
     },
     methods:{
@@ -34,6 +45,14 @@ const app = Vue.createApp({
             if (data) {
                 console.log(data);
             }
+        },
+
+        addFolder(){
+            //allow user to create another folder 
+            console.log("folder '%s' has been created\n", this.newFolder);
+            this.folders.push({name: this.newFolder, folder_color: null, folder_id: null });
+            this.newFolder = '';
+
         },
         addTask() {
             //allows user to add another task to their list
