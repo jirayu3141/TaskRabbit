@@ -5,3 +5,4 @@ TaskRabbit/src/backend/__pycache__/
 TaskRabbit/src/backend/env/
 package-lock.json
 node_modules/
+TaskRabbit/src/venv/

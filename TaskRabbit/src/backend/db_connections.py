@@ -25,6 +25,23 @@ def get_all_users():
     return cursor
 
 
+
+def get_folders(user_id):
+    cursor = db.cursor()
+    query1 = """SELECT users.first_name, folders.folder_id,folders.name,folders.color
+    FROM user_folder
+    LEFT JOIN folders ON user_folder.folder_id = folders.folder_id
+    LEFT JOIN users ON user_folder.user_id = users.user_id
+    WHERE users.user_id = %s"""
+    cursor.execute(query1,(user_id,))
+    first_name = cursor.fetchone()[0]
+    json_data = []
+    for (_,folder_id,name,color) in cursor:
+        json_data.append({'folderId': folder_id,'folderName':name,'folderColor': color})
+    cursor.close()
+    return (first_name,json_data)
+
+
 def get_all_folder():
     print('Attempting connection to DB')
 

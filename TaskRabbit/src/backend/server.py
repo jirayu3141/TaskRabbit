@@ -27,19 +27,13 @@ def hello_world():
 def test():
     return "<p>Test</p>"
 
-
-@app.route("/home", methods=['POST'])
-def home():
-
-    folder_samples = [
-        {'folderId': 1, 'folderName': "folder1", 'folderColor': "#fcba03"},
-        {'folderId': 2, 'folderName': "folder2", 'folderColor': "#fcba03"},
-        {'folderId': 3, 'folderName': "folder3", 'folderColor': "#fcba03"}]
-
-    return jsonify({
-        'firstName': "Peter",
-        'folders': folder_samples,
-    })
+@app.route('/home',methods = ['POST'])
+def home_url():
+    content = request.json
+    user_id = content['userId']
+    (first_name,folders) = get_folders(user_id)
+    return jsonify({'firstName': first_name,
+    'tasks': folders,})
 
 @app.route("/folder", methods=['POST'])
 def get_list():
