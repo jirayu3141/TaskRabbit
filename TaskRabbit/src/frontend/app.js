@@ -41,13 +41,25 @@ const app = Vue.createApp({
         },
 
 
-
     },
     methods:{
         goHome() {
             console.log("lets go to the home page!!");
             //TODO: redirect user to home page
         },
+
+        toggleShowFolders() {
+            console.log("show me my folders");
+           
+            if (!this.showFolders) {
+                this.getFolders();
+            }
+            else {
+                this.folders.splice(0);
+            }
+            this.showFolders = !this.showFolders;
+
+        }, 
         async getFolders() {
             console.log("getting all folders from this user");
             const requestOptions = 
@@ -112,6 +124,40 @@ const app = Vue.createApp({
         /**LISTS */
        
 
+
+        async addFolder() {
+            //allows user to add another task to their list
+            console.log("folder '%s' is created\n", this.newFolderName);
+            this.folders.push({name: this.newFolderName, color: this.newFolderColor});
+            
+    
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 0, //todo: user auth
+                    listId: 0,
+                    folderName: this.newFolderName, 
+                    folderColor: this.newFolderColor
+                })
+            };
+            const response = await fetch("http://127.0.0.1:5000/createTask", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
+
+
+            //set back to empty text field
+            this.newFolderName = ''; 
+            this.newFolderColor = ''; 
+
+         }, 
+
+         async deleteFolder(folder) {
+            //delete a specific folder 
+            this.folders = this.folders.filter((f) => f !== folder);
+
+            //TODO: backend delete from db
+        },
 
 
         /*TASKS */
