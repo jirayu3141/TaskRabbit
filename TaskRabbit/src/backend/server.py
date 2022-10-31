@@ -1,7 +1,7 @@
 from distutils.log import debug
 from json import dumps
 from multiprocessing.sharedctypes import Value
-from flask import Flask, request,jsonify
+from flask import Flask, request, jsonify
 from db_connections import *
 from werkzeug.exceptions import HTTPException
 from error_handling import InvalidAPIUsage
@@ -27,13 +27,15 @@ def hello_world():
 def test():
     return "<p>Test</p>"
 
-@app.route('/home',methods = ['POST'])
+
+@app.route('/home', methods=['POST'])
 def home_url():
     content = request.json
     user_id = content['userId']
-    (first_name,folders) = get_folders(user_id)
+    (first_name, folders) = get_folders(user_id)
     return jsonify({'firstName': first_name,
-    'tasks': folders,})
+                    'folders': folders, })
+
 
 @app.route("/folder", methods=['POST'])
 def get_list():
@@ -51,14 +53,17 @@ def get_list():
 @app.route("/listSample", methods=['POST'])
 def get_task_sample():
     task_sample = [
-        {'taskId': 1, 'taskName': "item1", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True},
-        {'taskId': 2, 'taskName': "item2", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True},
+        {'taskId': 1, 'taskName': "item1", 'taskDeadline': "2020-12-12",
+            'taskTag': "Important", 'taskIsCompleted': True},
+        {'taskId': 2, 'taskName': "item2", 'taskDeadline': "2020-12-12",
+            'taskTag': "Important", 'taskIsCompleted': True},
         {'taskId': 3, 'taskName': "item3", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True}]
 
     return jsonify({
         'status': 0,
         'tasks': task_sample,
     })
+
 
 @app.route("/list", methods=['POST'])
 def get_task_url():
@@ -85,12 +90,12 @@ def create_task():
 
     print('input: ' + str(content))
 
-
     (status, task_id) = write_task(list_id, task_name, task_deadline, task_tag)
     return jsonify({
         'status': status,
         'taskId': task_id,
     })
+
 
 @ app.route("/createFolder", methods=['POST'])
 def create_folder():
