@@ -21,7 +21,7 @@ def get_all_users():
         print(user_id, first_name, last_name, email)
 
     cursor.close()
-    db.close()
+    # db.close()
     return cursor
 
 
@@ -76,7 +76,7 @@ def write_folder(user_id, name, color):
 
         db.commit()
         cursor.close()
-        db.close()
+        # db.close()
         return (0, written_folder_id)
     except mysql.connector.Error as err:
         raise InvalidAPIUsage(format(err))
@@ -100,7 +100,7 @@ def write_list(user_id, folder_id, list_name):
 
         db.commit()
         cursor.close()
-        db.close()
+        # db.close()
         return (0, written_list_id)
     except mysql.connector.Error as err:
         print("Something went wrong: {}".format(err))
