@@ -1,99 +1,192 @@
 /** '  python3 server.py  ' in terminal will start server  */
-
+//pip install mysql-connector-python
+//pip install -U flask-cors
 const app = Vue.createApp({
-    //data, function
-
+    //TODO: ckeck w backend on tag and deadline parsing
+    //TODO: edit and delete tasks
+    //TODO: make funtioning web
+    //TODO: navigaiton
+    //TODO: seperate functions into dif files
     
     data() {
         return {
-            showThings: true,
+            showTasks: false,
             title: 'TaskRabbit',
 
-            tasks: [
-                {name: 'water', is_completed: true, tag: 'important', deadline: null},
-                {name: 'chicken', is_completed: false, tag: null, deadline: '12/2'},
-                {name: 'salt', is_completed: false, tag: 'important', deadline: '12/2'},
+            /*HOME */
+            newFolderName: '',
+            newFolderColor: '',
+            folders: [],
 
-            ],
-            newTask: '',
+            /*FOLDER */
+            newListName: '',
+            lists: [],
 
-            folders: [
-                {name: 'CS 348', folder_color: null},
-                {name: 'CS 252', folder_color: null},
-                {name: 'SOC 100', folder_color: null},
-
-
-            ], 
-
-            newFolder: '',
-
-            
+            /*TASKS */
+            hideCompleted: false,
+            taskId: 1,
+            newTaskName: '',
+            newTaskTag: '',
+            newTaskDeadline: '',
+            tasks: [],
         }
+    },
+    computed: {
+        //filter the todo list to either show completed tasks or not
+        filteredTasks() {
+          return this.hideCompleted
+            ? this.tasks.filter((t) => !t.is_completed)
+            : this.tasks
+        },
+    
     },
     methods:{
         goHome() {
             console.log("lets go to the home page!!");
             //TODO: redirect user to home page
         },
-        toggleShowThings() {
-            console.log("want to see a magic trick?");
-            this.showThings = !this.showThings;
-        },
-        handleEvent(e, data) {
-            //can take in undefined args ex. data
-            console.log("event", e, e.type);
-            if (data) {
-                console.log(data);
+
+        toggleShowFolders() {
+            console.log("show me my folders");
+           
+            if (!this.showFolders) {
+                this.getFolders();
             }
-        },
+            else {
+                this.folders.splice(0);
+            }
+            this.showFolders = !this.showFolders;
 
-        addFolder(){
-            //allow user to create another folder 
-            console.log("folder '%s' has been created\n", this.newFolder);
-            this.folders.push({name: this.newFolder, folder_color: null, folder_id: null });
-            this.newFolder = '';
-
-        },
-        addTask() {
-            //allows user to add another task to their list
-            console.log("task '%s' is sent\n", this.newTask);
-            this.tasks.push({name: this.newTask, is_completed: false, tag_id: null, deadline: null});
-            this.newTask = ''; //set back to empty text field
-            
-            //TODO: call backend to send in new task to database
-         }, 
-        async goHome() {
-            //test code to see if i can grab data from json
-            console.log("going home");
-              const requestOptions = {
+        }, 
+        async getFolders() {
+            console.log("getting all folders from this user");
+            const requestOptions = 
+            {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title: "Vue POST Request Example" })
-              };
-              const response = await fetch("http://127.0.0.1:5000/home", requestOptions);
-              const data = await response.json();
-              this.postId = data.id;
-              console.log(data);
-              console.log(data.firstName);
+                body: JSON.stringify({ 
+                    userId: 0, //todo: user auth
+                    listId: 0
+                })
+            };
+
+            const response = await fetch("http://127.0.0.1:5000/home", requestOptions);
+            const data = await response.json();
+            this.postId = data.id;
+            console.log(data); //data object from 
+
+            for (const e of data.folders) 
+            { //iterate over all tasks and push to 'task' array
+                tmpFolderId = e.folderId;
+                tmpFolderName = e.folderName;
+                tmpFolderColor = e.folderColor;
+                //push tasks to array
+                this.folders.push({id: tmpFolderId, name: tmpFolderName, color: tmpFolderColor});
+            }
+
+        },
+
+        async addFolder() {
+            //allows user to add another task to their list
+            console.log("folder '%s' is created\n", this.newFolderName);
+            this.folders.push({name: this.newFolderName, color: this.newFolderColor});
+            
+    
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 0, //todo: user auth
+                    listId: 0,
+                    folderName: this.newFolderName, 
+                    folderColor: this.newFolderColor
+                })
+            };
+            const response = await fetch("http://127.0.0.1:5000/createTask", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
 
 
+            //set back to empty text field
+            this.newFolderName = ''; 
+            this.newFolderColor = ''; 
 
-          },
+         }, 
+
+         async deleteFolder(folder) {
+            //delete a specific folder 
+            this.folders = this.folders.filter((f) => f !== folder);
+
+            //TODO: backend delete from db
+        },
+
+
+        /*TASKS */
+        toggleShowTasks() {
+            console.log("show me my tasks");
+            //don't grab task from backend twice
+            if (!this.showTasks) {
+                this.getTasks();
+            }
+            else {
+                //remove all data from local task array
+                this.tasks.splice(0);
+            }
+            this.showTasks = !this.showTasks;
+
+        }, 
+        async addTask() {
+            //allows user to add another task to their list
+            console.log("task '%s' is sent\n", this.newTaskName);
+            this.tasks.push({name: this.newTaskName, is_completed: false, tag: this.newTaskTag, deadline: this.newTaskDeadline});
+            
+            
+            //TODO: call backend to send in new task to database
+            // PUT request using fetch with async/await
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 0, //todo: user auth
+                    listId: 0,
+                    taskName: this.newTaskName, 
+                    taskTag: this.newTaskTag, 
+                    taskDeadline: this.newTaskDeadline
+                })
+            };
+            const response = await fetch("http://127.0.0.1:5000/createTask", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
+
+
+            //set back to empty text field
+            this.newTaskName = ''; 
+            this.newTaskTag = ''; 
+            this.newTaskDeadline = ''; 
+
+         }, 
+        async deleteTask(task) {
+            //delete a specific task from the list
+            this.tasks = this.tasks.filter((t) => t !== task);
+
+            //TODO: backend delete from db
+        },
         async getTasks() {
             console.log("getting all tasks in this list");
             const requestOptions = 
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title: "Vue POST Request Example" })
+                body: JSON.stringify({ 
+                    userId: 0, //todo: user auth
+                    listId: 0
+                })
             };
 
             const response = await fetch("http://127.0.0.1:5000/list", requestOptions);
             const data = await response.json();
             this.postId = data.id;
             console.log(data); //data object from 
-
-            console.log(data.tasks[0].taskName);
 
             for (const e of data.tasks) 
             { //iterate over all tasks and push to 'task' array
@@ -105,9 +198,15 @@ const app = Vue.createApp({
                 this.tasks.push({name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag_id: tmpTaskTag, deadline: tmpTaskDeadline});
             }
 
-          }
+
+
+          }, 
     
-    },
+    }, 
+    mounted() {
+        //immediatly get the folders from home
+        this.getFolders();
+      },
 
 
 })

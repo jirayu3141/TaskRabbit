@@ -54,8 +54,8 @@ def get_list():
     })
 
 
-@app.route("/list", methods=['POST'])
-def get_task():
+@app.route("/listSample", methods=['POST'])
+def get_task_sample():
     task_sample = [
         {'taskId': 1, 'taskName': "item1", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True},
         {'taskId': 2, 'taskName': "item2", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True},
@@ -64,6 +64,38 @@ def get_task():
     return jsonify({
         'status': 0,
         'tasks': task_sample,
+    })
+
+@app.route("/list", methods=['POST'])
+def get_task_url():
+    content = request.json
+    user_id = content['userId']
+    list_id = content['listId']
+
+    print(list_id)
+    result = get_tasks(user_id, list_id)
+
+    return jsonify({
+        'status': 0,
+        'tasks': result,
+    })
+
+
+@ app.route("/createTask", methods=['POST'])
+def create_task():
+    content = request.json
+    list_id = content['listId']
+    task_name = content['taskName']
+    task_deadline = content['taskDeadline']
+    task_tag = content['taskTag']
+
+    print('input: ' + str(content))
+
+
+    (status, task_id) = write_task(list_id, task_name, task_deadline, task_tag)
+    return jsonify({
+        'status': status,
+        'taskId': task_id,
     })
 
 @ app.route("/createFolder", methods=['POST'])
