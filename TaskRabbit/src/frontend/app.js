@@ -1,12 +1,8 @@
 /** '  python3 server.py  ' in terminal will start server  */
-//pip install mysql-connector-python
-//pip install -U flask-cors
+
 const app = Vue.createApp({
-    //TODO: ckeck w backend on tag and deadline parsing
-    //TODO: edit and delete tasks
-    //TODO: make funtioning web
-    //TODO: navigaiton
-    //TODO: seperate functions into dif files
+    //data, function
+
     
     data() {
         return {
