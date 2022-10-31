@@ -1,13 +1,14 @@
 /** '  python3 server.py  ' in terminal will start server  */
 //pip install mysql-connector-python
 //pip install -U flask-cors
+
+
 const app = Vue.createApp({
     //TODO: ckeck w backend on tag and deadline parsing
     //TODO: edit and delete tasks
     //TODO: make funtioning web
     //TODO: navigaiton
     //TODO: seperate functions into dif files
-    
     data() {
         return {
             showTasks: false,
@@ -38,6 +39,7 @@ const app = Vue.createApp({
             ? this.tasks.filter((t) => !t.is_completed)
             : this.tasks
         },
+
 
 
     },
@@ -73,6 +75,43 @@ const app = Vue.createApp({
             }
 
         },
+        async addFolder() {
+            //allows user to add another task to their list
+            console.log("folder '%s' is created\n", this.newFolderName);
+            //TODO: make new id
+            this.folders.push({name: this.newFolderName, color: this.newFolderColor});
+            
+    
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 0, //todo: user auth
+                    listId: 0,
+                    folderName: this.newFolderName, 
+                    folderColor: this.newFolderColor
+                })
+            };
+            const response = await fetch("http://127.0.0.1:5000/createTask", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
+
+
+            //set back to empty text field
+            this.newFolderName = ''; 
+            this.newFolderColor = ''; 
+
+        }, 
+        async deleteFolder(folder) {
+            //delete a specific folder 
+            this.folders = this.folders.filter((f) => f !== folder);
+
+            //TODO: backend delete from db
+        },
+
+        /**LISTS */
+       
+
 
 
         /*TASKS */

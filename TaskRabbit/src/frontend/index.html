@@ -1,10 +1,13 @@
+
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.30/vue.global.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.30/vue.global.min.js">
+  </script>
   <style>
     .item1 { grid-area: check; }
     .item2 { grid-area: main; }
@@ -50,19 +53,29 @@
 <body>
   <div id="app">
     <h1> {{ title }}</h1>
+    
 
     <!--HOME-->
-     <!---loopthroughlist-->
-     <ul>
+    <!---loopthroughfolders-->
+    <ul>
       <!---item in tasks[]-->
-      <div v-for="folder in folders " class="box">
-        <!---TODO: tell backend refreshed data about task completion-->
-        {{ folder.name }}  -- {{folder.color}}
-      </div>
-      <div class="box"> + </div>
+      <!---li v-for="folder in filteredFolders"> -->        
+        <div class="grid-container" v-for="f in folders">
+          <input class="item1" type="button" onclick="alert('TaskRabbit Folders!')">
+          <div class="item2">{{  f.name }}</div>  
+          <!---color css??-->
+          <!--color, show lists on click (open a new page)-->
+        </div>
+        <!---<button @click="deleteFolder(folder)">X</button>--->
 
-      <!---insert new task--->
-    </ul>
+      </li>
+        <!---insert new folder--->
+        <h2>New Folder Name: {{ newFolder}}</h2>
+        <input v-model="newFolderName" v-on:keyup.enter="addFolder" placeholder="edit name" />
+        <input v-model="newFolderColor" v-on:keyup.enter="addFolder" placeholder="edit color" />
+      </ul>
+
+
 
     
     <button @click="toggleShowTasks()"> SHOW TASKS</button>
@@ -94,13 +107,6 @@
 
     <br>   
 
-    <!--
-    <a href="">
-      <span>hi</span>
-
-    </a>
-    -->
-    <div class="box"></div>
 
    
   </div>
