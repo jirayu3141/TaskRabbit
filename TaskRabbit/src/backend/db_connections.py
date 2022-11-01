@@ -1,5 +1,4 @@
 from asyncio import create_task
-import json
 import mysql.connector
 from mysql.connector import MySQLConnection, Error
 import pwd
@@ -31,33 +30,22 @@ def get_all_users():
 
 def get_lists(user_id,folder_id):
     cursor = db.cursor()
-    # cursor.CommandText = "DROP PROCEDURE IF EXISTS add_emp";
-    # cursor.ExecuteNonQuery();
-    json_data = []
     try:
         cursor = db.cursor()
         args = [user_id,folder_id]
         cursor.callproc('get_lists',args)
-        #rows = cursor.fetchall()
+        lists = []
         li = []
         for res in cursor.stored_results():
             li = res.fetchall()
         for i in li:
-            json_data.append(i)
-        print(json_data)
-        # for (listid,listname) in cursor:
-        #     if cursor.nextset():
-        #         rows = cursor.fetchall()
-        #     else:
-        #         rows = None
-        # for i in cursor.stored_results():
-        #     json_data.append({"listId":i[0],"listName":i[1]})
-        #     print(i.fetchall())
+            lists.append(i)
+        cursor.close()
     except Error as e:
         print(e)
     cursor.close()
     
-    return json_data
+    return lists
 
 
 def get_folders(user_id):
