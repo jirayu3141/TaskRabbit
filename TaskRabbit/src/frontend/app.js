@@ -231,6 +231,49 @@ const app = Vue.createApp({
             }
         
         },
+        async editTask(task) {
+            console.log("changing competion of task " + task.name + task.id + "to" + task.is_completed);
+            //change the is_completed variable in this specific task in the backend
+            //check whether the task is changed to complete or incomplete
+            var taskAction;
+            if (task.is_completed)
+            { //task completed
+                taskAction = "complete"
+            }
+            else
+            { //task turned incomplete
+                taskAction = "uncomplete"
+            }
+
+            //request backend
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 1, //todo: user auth
+                    listId: 0, //TODO: get list number
+                    taskId: task.id,
+                    action: taskAction
+                    
+                })
+            };
+            const response = await fetch("http://127.0.0.1:5000/editTask", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
+            console.log("changeing task status", data);
+            tmpEditStatus = data.status;
+
+            //check delete status
+            if (tmpEditStatus == 1)
+            { //fail
+                alert("error editing task!");
+            }
+            else
+            { //success -> delete task from local
+                console.log("editing task: %s (%d)", task.name, task.id);
+            }
+
+        },
         async getTasks() {
             console.log("getting all tasks in this list");
             const requestOptions = 

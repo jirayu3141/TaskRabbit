@@ -167,10 +167,15 @@ def get_tasks(user_id, list_id):
         cursor.execute(query, (list_id,))
 
         task = []
+        print("before:")
+        print(task)
 
         for (task_id, description, is_completed, deadline, list_id, tag_id) in cursor:
             task.append({'taskId': task_id, 'taskName': description, 'taskIsCompleted': is_completed,
                         'taskDeadline': deadline, 'taskTag': ''})
+
+        print("after:")
+        print(task)
 
         cursor.close()
         # db.close()
