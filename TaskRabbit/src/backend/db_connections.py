@@ -25,6 +25,7 @@ def get_all_users():
     for (user_id, first_name, last_name, email) in cursor:
         print(user_id, first_name, last_name, email)
 
+    db.commit()
     cursor.close()
     # db.close()
     return cursor
@@ -42,6 +43,7 @@ def get_lists(user_id, folder_id):
             li = res.fetchall()
         for i in li:
             lists.append(i)
+        db.commit()
         cursor.close()
     except Error as e:
         print(e)
@@ -63,6 +65,8 @@ def get_folders(user_id):
     for (_, folder_id, name, color) in cursor:
         json_data.append(
             {'folderId': folder_id, 'folderName': name, 'folderColor': color})
+    
+    db.commit()
     cursor.close()
     return (first_name, json_data)
 
@@ -78,6 +82,7 @@ def get_all_folder():
     for (folder_id, name) in cursor:
         print(folder_id, name)
 
+    db.commit()
     cursor.close()
     db.close()
     return cursor
@@ -175,6 +180,7 @@ def get_tasks(user_id, list_id):
 
         print(task)
 
+        db.commit()
         cursor.close()
         # db.close()
         print("query complete")
