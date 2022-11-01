@@ -1,6 +1,7 @@
 from asyncio import create_task
 import mysql.connector
 import pwd
+import sqlalchemy
 from error_handling import InvalidAPIUsage
 
 db = mysql.connector.connect(user='admin', password='tAirftr1!!',
@@ -9,6 +10,7 @@ db = mysql.connector.connect(user='admin', password='tAirftr1!!',
 
 # TODO: make password a secret
 
+connection_string = 'Attempting connection to DB'
 
 def get_all_users():
     # TODO: use try, except, finally when accessing the database
@@ -59,7 +61,7 @@ def get_all_folder():
 
 
 def write_folder(user_id, name, color):
-    print('Attempting connection to DB')
+    print(connection_string)
     try:
         cursor = db.cursor()
         # insert to folders table
@@ -108,7 +110,7 @@ def write_list(user_id, folder_id, list_name):
 
 
 def write_task(list_id, task_name, deadline, tag=0):
-    print('Attempting connection to DB')
+    print(connection_string)
     try:
         cursor = db.cursor()
         # insert to folders table
@@ -134,7 +136,7 @@ def write_task(list_id, task_name, deadline, tag=0):
 
 
 def get_tasks(user_id, list_id):
-    print('Attempting connection to DB')
+    print(connection_string)
     try:
         cursor = db.cursor()
 
@@ -157,6 +159,7 @@ def get_tasks(user_id, list_id):
 
 
 if __name__ == "__main__":
-    write_task(1, "test", "test", 0)
+    print(get_list(1))
+    # write_task(1, "test", "test", 0)
     # get_tasks(1, 1)
     db.close()
