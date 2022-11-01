@@ -189,9 +189,8 @@ const app = Vue.createApp({
             }
             else
             { //success -> add task to local
-                newfolderid = data.folderId;
-                console.log("task '%s' is sent\n", this.newTaskName);
-                this.tasks.push({name: this.newTaskName, is_completed: false, tag: this.newTaskTag, deadline: this.newTaskDeadline});
+                console.log("task '%s' (%d) is sent\n", this.newTaskName, tmpTaskId);
+                this.tasks.push({id: tmpTaskId, name: this.newTaskName, is_completed: false, tag: this.newTaskTag, deadline: this.newTaskDeadline});
             
             }
 
@@ -200,12 +199,37 @@ const app = Vue.createApp({
             this.newTaskTag = ''; 
             this.newTaskDeadline = ''; 
 
-         }, 
+        }, 
         async deleteTask(task) {
             //delete a specific task from the list
-            this.tasks = this.tasks.filter((t) => t !== task);
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 1, //todo: user auth
+                    listId: 0, //TODO: get list number
+                    taskId: task.id,
+                    action: 'delete'
+                    
+                })
+            };
+            const response = await fetch("http://127.0.0.1:5000/editTask", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
+            console.log("delete task status", data);
+            tmpDeleteStatus = data.status;
 
-            //TODO: backend delete from db
+            //check delete status
+            if (tmpDeleteStatus == 1)
+            { //fail
+                alert("error deleting task!");
+            }
+            else
+            { //success -> delete task from local
+                console.log("deleting task: %s (%d)", task.name, task.id);
+                this.tasks = this.tasks.filter((t) => t !== task);
+            }
+        
         },
         async getTasks() {
             console.log("getting all tasks in this list");
@@ -226,12 +250,13 @@ const app = Vue.createApp({
 
             for (const e of data.tasks) 
             { //iterate over all tasks and push to 'task' array
+                tmpTaskId= e.taskId;
                 tmpTaskName = e.taskName;
                 tmpTaskIsCompleted = e.taskIsCompleted;
                 tmpTaskTag = e.taskTag;
                 tmpTaskDeadline = e.taskDeadline;
                 //push tasks to array
-                this.tasks.push({name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag_id: tmpTaskTag, deadline: tmpTaskDeadline});
+                    this.tasks.push({id: tmpTaskId, name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag_id: tmpTaskTag, deadline: tmpTaskDeadline});
             }
 
 
