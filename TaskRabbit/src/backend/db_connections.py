@@ -15,6 +15,7 @@ connection_string = 'Attempting connection to DB'
 engine = create_engine(
     'mysql+mysqlconnector://admin:tAirftr1!!@taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com:3306/main')
 
+
 def get_all_users():
     # TODO: use try, except, finally when accessing the database
     print('Attempting connection to DB')
@@ -67,7 +68,7 @@ def get_folders(user_id):
     for (_, folder_id, name, color) in cursor:
         json_data.append(
             {'folderId': folder_id, 'folderName': name, 'folderColor': color})
-    
+
     db.commit()
     cursor.close()
     return (first_name, json_data)
@@ -145,7 +146,11 @@ def write_task(list_id, task_name, deadline, tag=0):
         cursor = db.cursor()
         # insert to folders table
         sql = "INSERT INTO tasks (task_id, description, is_completed, deadline, list_id, tag_id) VALUES (%s, %s, %s, %s, %s, %s)"
-        val = (0,  task_name, False, deadline, list_id, 1)
+        # check if tag is null
+        if tag == 0:
+            val = (0,  task_name, False, deadline, list_id, 1)
+        else:
+            val = (0,  task_name, False, deadline, list_id, 2)
         cursor.execute(sql, val)
 
         print(cursor.statement)
@@ -170,15 +175,21 @@ def get_tasks(user_id, list_id):
     try:
         cursor = db.cursor()
 
-        query = "SELECT * from tasks WHERE list_id = %s"
+        query = """
+        SELECT task_id, tasks.description, is_completed, deadline, tags.description
+        From tasks 
+        LEFT JOIN tags ON tasks.tag_id = tags.tag_id
+        WHERE list_id = %s 
+        """
         cursor.execute(query, (list_id,))
 
         result = cursor.fetchall()
+        print(result)
 
         task = []
-        for (task_id, description, is_completed, deadline, list_id, tag_id) in result:
+        for (task_id, description, is_completed, deadline, tag) in result:
             task.append({'taskId': task_id, 'taskName': description, 'taskIsCompleted': is_completed,
-                        'taskDeadline': deadline, 'taskTag': ''})
+                        'taskDeadline': deadline, 'taskTag': tag})
 
         print(task)
 
@@ -200,20 +211,22 @@ def edit_task(task_id, action):
         print(connection_string)
         # complete task
         if action == 'complete':
-            engine.execute(text("UPDATE tasks SET is_completed = TRUE WHERE task_id = :task_id"), task_id=task_id)
+            engine.execute(text(
+                "UPDATE tasks SET is_completed = TRUE WHERE task_id = :task_id"), task_id=task_id)
             print('Task completed')
         # uncomplete task
         elif action == 'uncomplete':
-            engine.execute(text("UPDATE tasks SET is_completed = FALSE WHERE task_id = :task_id"), task_id=task_id)
+            engine.execute(text(
+                "UPDATE tasks SET is_completed = FALSE WHERE task_id = :task_id"), task_id=task_id)
             print('Task uncompleted')
         # delete task
         elif action == 'delete':
-            engine.execute(text("DELETE FROM tasks WHERE task_id = :task_id"), task_id=task_id)
+            engine.execute(
+                text("DELETE FROM tasks WHERE task_id = :task_id"), task_id=task_id)
             print('Task deleted')
     except Exception as e:
         print(e)
         raise InvalidAPIUsage(format(e))
-    
 
 
 if __name__ == "__main__":
