@@ -72,7 +72,7 @@
         <!---item in tasks[]-->
         <!---li v-for="folder in filteredFolders"> -->        
           <div v-for="f in folders">
-            <box class="box" onclick="location.href = 'folders.html'"> folder</box>
+            <box class="box" @click="getLists()" onclick="location.href = 'folders.html';"> folder</box>
             <div>{{  f.name }}</div>  
             <!---color css??-->
             <!--color, show lists on click (open a new page)-->

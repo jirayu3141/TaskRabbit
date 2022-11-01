@@ -165,11 +165,12 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0
+                    folderId: 3
+                    
                 })
             };
 
-            const response = await fetch("http://127.0.0.1:5000/home", requestOptions);
+            const response = await fetch("http://127.0.0.1:5000/folder", requestOptions);
             const data = await response.json();
             this.postId = data.id;
             console.log(data); //data object from 
