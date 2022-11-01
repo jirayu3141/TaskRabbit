@@ -375,7 +375,7 @@ const app = Vue.createApp({
                 tmpTaskDeadline = e.taskDeadline;
                 //push tasks to array
                 console.log("task %s (%d)", tmpTaskName, tmpTaskIsCompleted);
-                    this.tasks.push({id: tmpTaskId, name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag_id: tmpTaskTag, deadline: tmpTaskDeadline});
+                    this.tasks.push({id: tmpTaskId, name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag: tmpTaskTag, deadline: tmpTaskDeadline});
             }
 
           }, 
