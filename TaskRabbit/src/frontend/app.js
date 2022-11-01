@@ -14,6 +14,7 @@ const app = Vue.createApp({
     data() {
         return {
             showTasks: false,
+            checked: true,
             title: 'TaskRabbit',
 
             /*HOME */
@@ -311,7 +312,7 @@ const app = Vue.createApp({
             //change the is_completed variable in this specific task in the backend
             //check whether the task is changed to complete or incomplete
             var taskAction;
-            if (task.is_completed)
+            if (!task.is_completed)
             { //task completed
                 taskAction = "complete"
             }
@@ -346,11 +347,11 @@ const app = Vue.createApp({
             else
             { //success -> delete task from local
                 console.log("editing task: %s (%d)", task.name, task.id);
+                task.is_completed = !task.is_completed;
             }
 
         },
         async getTasks() {
-            console.log("getting all tasks in this list");
             const requestOptions = 
             {
                 method: "POST",
@@ -364,7 +365,7 @@ const app = Vue.createApp({
             const response = await fetch("http://127.0.0.1:5000/list", requestOptions);
             const data = await response.json();
             this.postId = data.id;
-            console.log(data); //data object from 
+            console.log("getting all task", data); //data object from 
 
             for (const e of data.tasks) 
             { //iterate over all tasks and push to 'task' array
@@ -374,10 +375,9 @@ const app = Vue.createApp({
                 tmpTaskTag = e.taskTag;
                 tmpTaskDeadline = e.taskDeadline;
                 //push tasks to array
+                console.log("task %s (%d)", tmpTaskName, tmpTaskIsCompleted);
                     this.tasks.push({id: tmpTaskId, name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag_id: tmpTaskTag, deadline: tmpTaskDeadline});
             }
-
-
 
           }, 
     
