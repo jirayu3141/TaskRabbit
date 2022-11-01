@@ -41,21 +41,9 @@ def get_list():
     content = request.json
     user_id = content['userId']
     folder_id = content['folderId']
-    (lists) = get_lists(user_id,folder_id)
+    lists = get_lists(user_id,folder_id)
     return jsonify({'status': 0,
                     'lists': lists})
-
-# @app.route("/folder", methods=['POST'])
-# def get_list():
-#     list_samples = [
-#         {'list_id': 1, 'list_name': "list1"},
-#         {'list_id': 2, 'list_name': "list2"},
-#         {'list_id': 3, 'list_name': "list3"}]
-
-#     return jsonify({
-#         'status': 0,
-#         'lists': list_samples,
-#     })
 
 
 @app.route("/listSample", methods=['POST'])
@@ -138,6 +126,22 @@ def create_list():
     return jsonify({
         'status': status,
         'list_id': list_id,
+    })
+
+@ app.route("/editTask", methods=['POST'])
+def edit_task_url():
+    content = request.json
+    user_id = content['userId']
+    task_id = content['taskId']
+    action = content['action']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    edit_task(task_id, action)
+    return jsonify({
+        'status': 0
     })
 
 
