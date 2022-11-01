@@ -166,15 +166,13 @@ def get_tasks(user_id, list_id):
         query = "SELECT * from tasks WHERE list_id = %s"
         cursor.execute(query, (list_id,))
 
-        task = []
-        print("before:")
-        print(task)
+        result = cursor.fetchall()
 
-        for (task_id, description, is_completed, deadline, list_id, tag_id) in cursor:
+        task = []
+        for (task_id, description, is_completed, deadline, list_id, tag_id) in result:
             task.append({'taskId': task_id, 'taskName': description, 'taskIsCompleted': is_completed,
                         'taskDeadline': deadline, 'taskTag': ''})
 
-        print("after:")
         print(task)
 
         cursor.close()
@@ -211,7 +209,7 @@ def edit_task(task_id, action):
 
 
 if __name__ == "__main__":
-    edit_task(35, 'uncomplete')
+    # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
-    # get_tasks(1, 1)
+    get_tasks(1, 1)
     db.close()

@@ -8,7 +8,8 @@ from error_handling import InvalidAPIUsage
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 @app.errorhandler(InvalidAPIUsage)
