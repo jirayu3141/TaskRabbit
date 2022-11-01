@@ -34,20 +34,28 @@ def home_url():
     user_id = content['userId']
     (first_name, folders) = get_folders(user_id)
     return jsonify({'firstName': first_name,
-                    'folders': folders, })
+                    'folders': folders})
 
-
-@app.route("/folder", methods=['POST'])
+@app.route('/folder', methods=['POST'])
 def get_list():
-    list_samples = [
-        {'list_id': 1, 'list_name': "list1"},
-        {'list_id': 2, 'list_name': "list2"},
-        {'list_id': 3, 'list_name': "list3"}]
+    content = request.json
+    user_id = content['userId']
+    folder_id = content['folderId']
+    (lists) = get_lists(user_id,folder_id)
+    return jsonify({'status': 0,
+                    'lists': lists})
 
-    return jsonify({
-        'status': 0,
-        'lists': list_samples,
-    })
+# @app.route("/folder", methods=['POST'])
+# def get_list():
+#     list_samples = [
+#         {'list_id': 1, 'list_name': "list1"},
+#         {'list_id': 2, 'list_name': "list2"},
+#         {'list_id': 3, 'list_name': "list3"}]
+
+#     return jsonify({
+#         'status': 0,
+#         'lists': list_samples,
+#     })
 
 
 @app.route("/listSample", methods=['POST'])

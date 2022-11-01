@@ -3,6 +3,7 @@
 //pip install -U flask-cors
 
 
+
 const app = Vue.createApp({
     //TODO: ckeck w backend on tag and deadline parsing
     //TODO: edit and delete tasks
@@ -67,8 +68,7 @@ const app = Vue.createApp({
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
-                    userId: 0, //todo: user auth
-                    listId: 0
+                    userId: 1, //todo: user auth
                 })
             };
 
@@ -88,26 +88,30 @@ const app = Vue.createApp({
 
         },
         async addFolder() {
-            //allows user to add another task to their list
-            console.log("folder '%s' is created\n", this.newFolderName);
-            //TODO: make new id
-            this.folders.push({name: this.newFolderName, color: this.newFolderColor});
             
+            console.log("trying to add a folder");
     
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
-                    userId: 0, //todo: user auth
+                    userId: 1, //todo: user auth
                     listId: 0,
                     folderName: this.newFolderName, 
                     folderColor: this.newFolderColor
                 })
             };
-            const response = await fetch("http://127.0.0.1:5000/createTask", requestOptions);
+            const response = await fetch("http://127.0.0.1:5000/createFolder", requestOptions);
             const data = await response.json();
             this.updatedAt = data.updatedAt;
 
+            console.log(data);
+
+            //allows user to add another task to their list
+            console.log("folder '%s' is created\n", this.newFolderName);
+            //TODO: make new id
+            //TODO: get folder id
+            this.folders.push({id: 0, name: this.newFolderName, color: this.newFolderColor});
 
             //set back to empty text field
             this.newFolderName = ''; 
@@ -116,44 +120,7 @@ const app = Vue.createApp({
         }, 
         async deleteFolder(folder) {
             //delete a specific folder 
-            this.folders = this.folders.filter((f) => f !== folder);
-
-            //TODO: backend delete from db
-        },
-
-        /**LISTS */
-       
-
-
-        async addFolder() {
-            //allows user to add another task to their list
-            console.log("folder '%s' is created\n", this.newFolderName);
-            this.folders.push({name: this.newFolderName, color: this.newFolderColor});
-            
-    
-            const requestOptions = {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    userId: 0, //todo: user auth
-                    listId: 0,
-                    folderName: this.newFolderName, 
-                    folderColor: this.newFolderColor
-                })
-            };
-            const response = await fetch("http://127.0.0.1:5000/createTask", requestOptions);
-            const data = await response.json();
-            this.updatedAt = data.updatedAt;
-
-
-            //set back to empty text field
-            this.newFolderName = ''; 
-            this.newFolderColor = ''; 
-
-         }, 
-
-         async deleteFolder(folder) {
-            //delete a specific folder 
+            //TODO : uer with right click can delete with menue
             this.folders = this.folders.filter((f) => f !== folder);
 
             //TODO: backend delete from db
@@ -186,7 +153,7 @@ const app = Vue.createApp({
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
-                    userId: 0, //todo: user auth
+                    userId: 1, //todo: user auth
                     listId: 0,
                     taskName: this.newTaskName, 
                     taskTag: this.newTaskTag, 
@@ -196,6 +163,12 @@ const app = Vue.createApp({
             const response = await fetch("http://127.0.0.1:5000/createTask", requestOptions);
             const data = await response.json();
             this.updatedAt = data.updatedAt;
+
+            //TODO: check status <int> (0 : success, 1 - already exist, -1 fail)
+
+
+            newfolderid = data.folderId;
+            console.log("new folder id is: ", newfolderid);
 
 
             //set back to empty text field
@@ -217,7 +190,7 @@ const app = Vue.createApp({
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
-                    userId: 0, //todo: user auth
+                    userId: 1, //todo: user auth
                     listId: 0
                 })
             };
