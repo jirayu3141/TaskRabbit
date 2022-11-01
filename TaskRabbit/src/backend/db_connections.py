@@ -1,5 +1,7 @@
 from asyncio import create_task
+import json
 import mysql.connector
+from mysql.connector import MySQLConnection, Error
 import pwd
 from error_handling import InvalidAPIUsage
 
@@ -24,6 +26,36 @@ def get_all_users():
     # db.close()
     return cursor
 
+
+def get_lists(user_id,folder_id):
+    cursor = db.cursor()
+    # cursor.CommandText = "DROP PROCEDURE IF EXISTS add_emp";
+    # cursor.ExecuteNonQuery();
+    json_data = []
+    try:
+        cursor = db.cursor()
+        args = [user_id,folder_id]
+        cursor.callproc('get_lists',args)
+        #rows = cursor.fetchall()
+        li = []
+        for res in cursor.stored_results():
+            li = res.fetchall()
+        for i in li:
+            json_data.append(i)
+        print(json_data)
+        # for (listid,listname) in cursor:
+        #     if cursor.nextset():
+        #         rows = cursor.fetchall()
+        #     else:
+        #         rows = None
+        # for i in cursor.stored_results():
+        #     json_data.append({"listId":i[0],"listName":i[1]})
+        #     print(i.fetchall())
+    except Error as e:
+        print(e)
+    cursor.close()
+    
+    return json_data
 
 
 def get_folders(user_id):
@@ -157,6 +189,7 @@ def get_tasks(user_id, list_id):
 
 
 if __name__ == "__main__":
-    write_task(1, "test", "test", 0)
+    # write_task(1, "test", "test", 0)
     # get_tasks(1, 1)
+    get_lists(1,3)
     db.close()
