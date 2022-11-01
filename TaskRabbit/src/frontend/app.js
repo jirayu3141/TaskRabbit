@@ -1,6 +1,7 @@
 /** '  python3 server.py  ' in terminal will start server  */
 //pip install mysql-connector-python
 //pip install -U flask-cors
+//pip install Flask-SQLAlchemy
 
 
 
@@ -88,9 +89,11 @@ const app = Vue.createApp({
 
         },
         async addFolder() {
-            
+            var tmpFolderStatus;
+            var tmpFolderId;
+
             console.log("trying to add a folder");
-    
+            //connect to backend 
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -102,17 +105,29 @@ const app = Vue.createApp({
                 })
             };
             const response = await fetch("http://127.0.0.1:5000/createFolder", requestOptions);
-            const data = await response.json();
+            const data = await response.json(); //get status from data
             this.updatedAt = data.updatedAt;
 
             console.log(data);
+            tmpFolderStatus = data.status;
+            tmpFolderId = data.folderId;
+            
+            //check status if folder is created: Status”: <int> (0 : success, 1 - already exist, -1 fail)
+            if (tmpFolderStatus == -1) 
+            { //error
+                alert('error');
+            }
+            else if (tmpFolderStatus == 1)
+            { //already exists
+                alert('Folder ' + this.newFolderName + ' already exists!');
+            }
+            else
+            { //success 0
+                console.log("folder '%s' is created\n", this.newFolderName);
+                this.folders.push({id: tmpFolderId, name: this.newFolderName, color: this.newFolderColor});
+            }
 
-            //allows user to add another task to their list
-            console.log("folder '%s' is created\n", this.newFolderName);
-            //TODO: make new id
-            //TODO: get folder id
-            this.folders.push({id: 0, name: this.newFolderName, color: this.newFolderColor});
-
+            
             //set back to empty text field
             this.newFolderName = ''; 
             this.newFolderColor = ''; 
