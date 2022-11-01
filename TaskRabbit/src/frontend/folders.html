@@ -61,8 +61,9 @@
           <input class="item1" type="button">
           <div class="item2">{{  l.name }}</div>  
         </div>
-      <!--<button @click="deleteList(list)">X</button>--> 
-
+      <!--<button @click="deleteList(list)">X</button>-->
+      
+      
       </li>
         <!---insert new list--->
         <h2>Add a list: {{ newList}}</h2>
@@ -73,9 +74,11 @@
       <label for="list">Select a list:</label>
 
       <select name = "list" id="list"> <!---figure out the name and id values-->
-        <option value="" selected = "selected"> select list</option>
-      
-
+        <li v-for="l in lists">
+        <option value= "lists">list 1</option>
+        <option value= "lists">list 2</option>
+        <option value= "lists">list 3</option>
+      </li>
       </select>
 
     <button @click="toggleShowTasks()"> SHOW TASKS</button>

@@ -26,6 +26,7 @@ const app = Vue.createApp({
             newListName: '',
             lists: [],
 
+            
             /*TASKS */
             hideCompleted: false,
             taskId: 1,
@@ -166,7 +167,6 @@ const app = Vue.createApp({
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
                     folderId: 3
-                    
                 })
             };
 
