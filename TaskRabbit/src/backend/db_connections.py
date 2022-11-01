@@ -41,8 +41,10 @@ def get_lists(user_id, folder_id):
         li = []
         for res in cursor.stored_results():
             li = res.fetchall()
-        for i in li:
-            lists.append(i)
+        for (listid,listname) in li:
+            dict = {"listId":listid,
+            "listName":listname}
+            lists.append(dict)
         db.commit()
         cursor.close()
     except Error as e:
@@ -217,5 +219,5 @@ def edit_task(task_id, action):
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
-    get_tasks(1, 1)
+    print(get_lists(1, 3))
     db.close()
