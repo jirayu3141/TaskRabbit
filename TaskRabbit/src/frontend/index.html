@@ -56,10 +56,10 @@
     <!--HOME-->
     <!---loopthroughfolders-->
     <ul>
-      <!---item in tasks[]-->
+      <!---item in folders[]-->
       <!---li v-for="folder in filteredFolders"> -->        
         <div class="grid-container" v-for="f in folders">
-          <input class="item1" type="button" onclick="alert('TaskRabbit Folders!')">
+          <input class="item1" type="button" onclick="location.href = 'folders.html'">
           <div class="item2">{{  f.name }}</div>  
           <!---color css??-->
           <!--color, show lists on click (open a new page)-->

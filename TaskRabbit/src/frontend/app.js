@@ -21,6 +21,7 @@ const app = Vue.createApp({
             /*FOLDER */
             newListName: '',
             lists: [],
+        
 
             /*TASKS */
             hideCompleted: false,
@@ -46,6 +47,7 @@ const app = Vue.createApp({
             //TODO: redirect user to home page
         },
 
+         /*FOLDERS */
         toggleShowFolders() {
             console.log("show me my folders");
            
@@ -65,7 +67,7 @@ const app = Vue.createApp({
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
-                    userId: 0, //todo: user auth
+                    userId: 1, //todo: user auth
                     listId: 0
                 })
             };
@@ -96,13 +98,13 @@ const app = Vue.createApp({
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
-                    userId: 0, //todo: user auth
+                    userId: 1, //todo: user auth
                     listId: 0,
                     folderName: this.newFolderName, 
                     folderColor: this.newFolderColor
                 })
             };
-            const response = await fetch("http://127.0.0.1:5000/createTask", requestOptions);
+            const response = await fetch("http://127.0.0.1:5000/createFolder", requestOptions);
             const data = await response.json();
             this.updatedAt = data.updatedAt;
 
@@ -120,6 +122,79 @@ const app = Vue.createApp({
             //TODO: backend delete from db
         },
 
+         /*LISTS */
+
+        toggleShowLists() {
+            console.log("show me my lists");
+           
+            if (!this.showLists) {
+                this.getLists();
+            }
+            else {
+                this.lists.splice(0);
+            }
+            this.showLists = !this.showLists;
+
+        }, 
+        async getLists() {
+            console.log("getting all lists from this user");
+            const requestOptions = 
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 1, //todo: user auth
+                    listId: 0
+                })
+            };
+
+            const response = await fetch("http://127.0.0.1:5000/home", requestOptions);
+            const data = await response.json();
+            this.postId = data.id;
+            console.log(data); //data object from 
+
+            for (const e of data.folders) 
+            { //iterate over all tasks and push to 'task' array
+                tmpListId = e.listId;
+                tmpListName = e.listName;
+            
+                //push tasks to array
+                this.folders.push({id: tmpListId, name: tmpListName});
+            }
+
+        },
+
+        async addList() {
+            //allows user to add another task to their list
+            console.log("list '%s' is created\n", this.newListName);
+            this.lists.push({name: this.newListName});
+            
+    
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 1, //todo: user auth
+                    listId: 0,
+                    listName: this.newListName, 
+                })
+            };
+            const response = await fetch("http://127.0.0.1:5000/createList", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
+
+
+            //set back to empty text field
+            this.newListName = '';
+
+         }, 
+
+         async deleteList(list) {
+            //delete a specific list 
+            this.lists = this.lists.filter((l) => l !== list);
+
+            //TODO: backend delete from db
+        },
 
         /*TASKS */
         toggleShowTasks() {
@@ -147,7 +222,7 @@ const app = Vue.createApp({
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
-                    userId: 0, //todo: user auth
+                    userId: 1, //todo: user auth
                     listId: 0,
                     taskName: this.newTaskName, 
                     taskTag: this.newTaskTag, 
@@ -178,7 +253,7 @@ const app = Vue.createApp({
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
-                    userId: 0, //todo: user auth
+                    userId: 1, //todo: user auth
                     listId: 0
                 })
             };
