@@ -1,14 +1,19 @@
 from asyncio import create_task
 import mysql.connector
-import pwd
+from mysql.connector import MySQLConnection, Error
+from sqlalchemy import create_engine, text
 from error_handling import InvalidAPIUsage
 
 db = mysql.connector.connect(user='admin', password='tAirftr1!!',
                              host='taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com',
                              database='main')
 
-# TODO: make password a secret
 
+connection_string = 'Attempting connection to DB'
+
+# connect to db using SQL Alchemy
+engine = create_engine(
+    'mysql+mysqlconnector://admin:tAirftr1!!@taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com:3306/main')
 
 def get_all_users():
     # TODO: use try, except, finally when accessing the database
@@ -21,8 +26,45 @@ def get_all_users():
         print(user_id, first_name, last_name, email)
 
     cursor.close()
-    db.close()
+    # db.close()
     return cursor
+
+
+def get_lists(user_id, folder_id):
+    cursor = db.cursor()
+    try:
+        cursor = db.cursor()
+        args = [user_id, folder_id]
+        cursor.callproc('get_lists', args)
+        lists = []
+        li = []
+        for res in cursor.stored_results():
+            li = res.fetchall()
+        for i in li:
+            lists.append(i)
+        cursor.close()
+    except Error as e:
+        print(e)
+    cursor.close()
+
+    return lists
+
+
+def get_folders(user_id):
+    cursor = db.cursor()
+    query1 = """SELECT users.first_name, folders.folder_id,folders.name,folders.color
+    FROM user_folder
+    LEFT JOIN folders ON user_folder.folder_id = folders.folder_id
+    LEFT JOIN users ON user_folder.user_id = users.user_id
+    WHERE users.user_id = %s"""
+    cursor.execute(query1, (user_id,))
+    first_name = cursor.fetchone()[0]
+    json_data = []
+    for (_, folder_id, name, color) in cursor:
+        json_data.append(
+            {'folderId': folder_id, 'folderName': name, 'folderColor': color})
+    cursor.close()
+    return (first_name, json_data)
 
 
 def get_all_folder():
@@ -42,7 +84,7 @@ def get_all_folder():
 
 
 def write_folder(user_id, name, color):
-    print('Attempting connection to DB')
+    print(connection_string)
     try:
         cursor = db.cursor()
         # insert to folders table
@@ -59,7 +101,7 @@ def write_folder(user_id, name, color):
 
         db.commit()
         cursor.close()
-        db.close()
+        # db.close()
         return (0, written_folder_id)
     except mysql.connector.Error as err:
         raise InvalidAPIUsage(format(err))
@@ -83,7 +125,7 @@ def write_list(user_id, folder_id, list_name):
 
         db.commit()
         cursor.close()
-        db.close()
+        # db.close()
         return (0, written_list_id)
     except mysql.connector.Error as err:
         print("Something went wrong: {}".format(err))
@@ -91,14 +133,14 @@ def write_list(user_id, folder_id, list_name):
 
 
 def write_task(list_id, task_name, deadline, tag=0):
-    print('Attempting connection to DB')
+    print(connection_string)
     try:
         cursor = db.cursor()
         # insert to folders table
         sql = "INSERT INTO tasks (task_id, description, is_completed, deadline, list_id, tag_id) VALUES (%s, %s, %s, %s, %s, %s)"
         val = (0,  task_name, False, deadline, list_id, 1)
         cursor.execute(sql, val)
-        
+
         print(cursor.statement)
 
         written_list_id = cursor.lastrowid
@@ -117,18 +159,21 @@ def write_task(list_id, task_name, deadline, tag=0):
 
 
 def get_tasks(user_id, list_id):
-    print('Attempting connection to DB')
+    print(connection_string)
     try:
         cursor = db.cursor()
 
         query = "SELECT * from tasks WHERE list_id = %s"
         cursor.execute(query, (list_id,))
 
-        task = []
+        result = cursor.fetchall()
 
-        for (task_id, description, is_completed, deadline, list_id, tag_id) in cursor:
+        task = []
+        for (task_id, description, is_completed, deadline, list_id, tag_id) in result:
             task.append({'taskId': task_id, 'taskName': description, 'taskIsCompleted': is_completed,
                         'taskDeadline': deadline, 'taskTag': ''})
+
+        print(task)
 
         cursor.close()
         # db.close()
@@ -139,7 +184,32 @@ def get_tasks(user_id, list_id):
         raise InvalidAPIUsage(format(err))
 
 
+def edit_task(task_id, action):
+    if action not in ['complete', 'uncomplete', 'delete']:
+        raise InvalidAPIUsage(
+            'Invalid action - must be complete, uncomplete, or delete')
+    try:
+        print(connection_string)
+        # complete task
+        if action == 'complete':
+            engine.execute(text("UPDATE tasks SET is_completed = TRUE WHERE task_id = :task_id"), task_id=task_id)
+            print('Task completed')
+        # uncomplete task
+        elif action == 'uncomplete':
+            engine.execute(text("UPDATE tasks SET is_completed = FALSE WHERE task_id = :task_id"), task_id=task_id)
+            print('Task uncompleted')
+        # delete task
+        elif action == 'delete':
+            engine.execute(text("DELETE FROM tasks WHERE task_id = :task_id"), task_id=task_id)
+            print('Task deleted')
+    except Exception as e:
+        print(e)
+        raise InvalidAPIUsage(format(e))
+    
+
+
 if __name__ == "__main__":
-    write_task(1, "test", "test", 0)
-    # get_tasks(1, 1)
+    # edit_task(35, 'uncomplete')
+    # # write_task(1, "test", "test", 0)
+    get_tasks(1, 1)
     db.close()

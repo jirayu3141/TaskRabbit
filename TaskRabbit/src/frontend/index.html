@@ -1,3 +1,5 @@
+
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -39,12 +41,19 @@
 
     
     .box {
-    padding: 70px 0;
+    padding: 60px 0;
     width: 200px;
     text-align: center;
     background: #ddd;
-    margin: 20px;
+    margin: 10px;
     display: inline-block;
+    }
+
+    .array {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
     }
   </style>
 </head>
@@ -56,10 +65,10 @@
     <!--HOME-->
     <!---loopthroughfolders-->
     <ul>
-      <!---item in folders[]-->
+      <!---item in tasks[]-->
       <!---li v-for="folder in filteredFolders"> -->        
         <div class="grid-container" v-for="f in folders">
-          <input class="item1" type="button" onclick="location.href = 'folders.html'">
+          <input class="item1" type="button" onclick="alert('TaskRabbit Folders!')">
           <div class="item2">{{  f.name }}</div>  
           <!---color css??-->
           <!--color, show lists on click (open a new page)-->
@@ -83,9 +92,8 @@
             <!---item in tasks[]-->
             <li v-for="task in filteredTasks">
               <!---TODO: tell backend refreshed data about task completion-->
-              
               <div class="grid-container">
-                <input class="item1" type="checkbox" v-model="task.is_completed">
+                <input class="item1" type="checkbox" v-model="task.is_completed" @click="editTask(task)">
                 <div class="item2">{{  task.name }}</div>  
                 <sub class="item3">{{ task.tag }} {{ task.deadline }}</sub>
               </div>

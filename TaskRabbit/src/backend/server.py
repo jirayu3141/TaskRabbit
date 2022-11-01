@@ -1,14 +1,15 @@
 from distutils.log import debug
 from json import dumps
 from multiprocessing.sharedctypes import Value
-from flask import Flask, request,jsonify
+from flask import Flask, request, jsonify
 from db_connections import *
 from werkzeug.exceptions import HTTPException
 from error_handling import InvalidAPIUsage
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 @app.errorhandler(InvalidAPIUsage)
@@ -28,43 +29,38 @@ def test():
     return "<p>Test</p>"
 
 
-@app.route("/home", methods=['POST'])
-def home():
+@app.route('/home', methods=['POST'])
+def home_url():
+    content = request.json
+    user_id = content['userId']
+    (first_name, folders) = get_folders(user_id)
+    return jsonify({'firstName': first_name,
+                    'folders': folders})
 
-    folder_samples = [
-        {'folderId': 1, 'folderName': "folder1", 'folderColor': "#fcba03"},
-        {'folderId': 2, 'folderName': "folder2", 'folderColor': "#fcba03"},
-        {'folderId': 3, 'folderName': "folder3", 'folderColor': "#fcba03"}]
-
-    return jsonify({
-        'firstName': "Peter",
-        'folders': folder_samples,
-    })
-
-@app.route("/folder", methods=['POST'])
+@app.route('/folder', methods=['POST'])
 def get_list():
-    list_samples = [
-        {'list_id': 1, 'list_name': "list1"},
-        {'list_id': 2, 'list_name': "list2"},
-        {'list_id': 3, 'list_name': "list3"}]
-
-    return jsonify({
-        'status': 0,
-        'lists': list_samples,
-    })
+    content = request.json
+    user_id = content['userId']
+    folder_id = content['folderId']
+    lists = get_lists(user_id,folder_id)
+    return jsonify({'status': 0,
+                    'lists': lists})
 
 
 @app.route("/listSample", methods=['POST'])
 def get_task_sample():
     task_sample = [
-        {'taskId': 1, 'taskName': "item1", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True},
-        {'taskId': 2, 'taskName': "item2", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True},
+        {'taskId': 1, 'taskName': "item1", 'taskDeadline': "2020-12-12",
+            'taskTag': "Important", 'taskIsCompleted': True},
+        {'taskId': 2, 'taskName': "item2", 'taskDeadline': "2020-12-12",
+            'taskTag': "Important", 'taskIsCompleted': True},
         {'taskId': 3, 'taskName': "item3", 'taskDeadline': "2020-12-12", 'taskTag': "Important", 'taskIsCompleted': True}]
 
     return jsonify({
         'status': 0,
         'tasks': task_sample,
     })
+
 
 @app.route("/list", methods=['POST'])
 def get_task_url():
@@ -91,12 +87,12 @@ def create_task():
 
     print('input: ' + str(content))
 
-
     (status, task_id) = write_task(list_id, task_name, task_deadline, task_tag)
     return jsonify({
         'status': status,
         'taskId': task_id,
     })
+
 
 @ app.route("/createFolder", methods=['POST'])
 def create_folder():
@@ -131,6 +127,22 @@ def create_list():
     return jsonify({
         'status': status,
         'list_id': list_id,
+    })
+
+@ app.route("/editTask", methods=['POST'])
+def edit_task_url():
+    content = request.json
+    user_id = content['userId']
+    task_id = content['taskId']
+    action = content['action']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    edit_task(task_id, action)
+    return jsonify({
+        'status': 0
     })
 
 
