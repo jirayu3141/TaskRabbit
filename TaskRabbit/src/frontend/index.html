@@ -89,6 +89,8 @@
 
     
     <button @click="toggleShowTasks()"> SHOW TASKS</button>
+    
+
       <div v-if="showTasks">
           <!---loopthroughlist-->
           <ul>
@@ -96,7 +98,7 @@
             <li v-for="task in filteredTasks">
               <!---TODO: tell backend refreshed data about task completion-->
               <div class="grid-container">
-                <input class="item1" type="checkbox" v-model="task.is_completed" @click="editTask(task)">
+                <input class="item1" type="checkbox" :checked="task.is_completed" @click="editTask(task)">
                 <div class="item2">{{  task.name }}</div>  
                 <sub class="item3">{{ task.tag }} {{ task.deadline }}</sub>
               </div>
