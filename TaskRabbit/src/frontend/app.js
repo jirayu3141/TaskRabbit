@@ -108,10 +108,10 @@ const app = Vue.createApp({
             const data = await response.json(); //get status from data
             this.updatedAt = data.updatedAt;
 
-            console.log(data);
+            console.log("create folder status", data);
             tmpFolderStatus = data.status;
             tmpFolderId = data.folderId;
-            
+
             //check status if folder is created: Status”: <int> (0 : success, 1 - already exist, -1 fail)
             if (tmpFolderStatus == -1) 
             { //error
@@ -158,11 +158,10 @@ const app = Vue.createApp({
         }, 
         async addTask() {
             //allows user to add another task to their list
-            console.log("task '%s' is sent\n", this.newTaskName);
-            this.tasks.push({name: this.newTaskName, is_completed: false, tag: this.newTaskTag, deadline: this.newTaskDeadline});
+            var tmpTaskId;
+            var tmpTaskStatus;
             
-            
-            //TODO: call backend to send in new task to database
+            //call backend to send in new task to database
             // PUT request using fetch with async/await
             const requestOptions = {
                 method: "POST",
@@ -178,13 +177,23 @@ const app = Vue.createApp({
             const response = await fetch("http://127.0.0.1:5000/createTask", requestOptions);
             const data = await response.json();
             this.updatedAt = data.updatedAt;
+            console.log("create task status", data);
 
-            //TODO: check status <int> (0 : success, 1 - already exist, -1 fail)
+            //TODO: check status <int> (0 : success, 1 fail)
+            tmpTaskId = data.taskId;
+            tmpTaskStatus = data.status;
 
-
-            newfolderid = data.folderId;
-            console.log("new folder id is: ", newfolderid);
-
+            if (tmpTaskStatus == 1)
+            { //fail
+                alert("error creating task!");
+            }
+            else
+            { //success -> add task to local
+                newfolderid = data.folderId;
+                console.log("task '%s' is sent\n", this.newTaskName);
+                this.tasks.push({name: this.newTaskName, is_completed: false, tag: this.newTaskTag, deadline: this.newTaskDeadline});
+            
+            }
 
             //set back to empty text field
             this.newTaskName = ''; 
