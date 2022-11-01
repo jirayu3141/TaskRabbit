@@ -6,3 +6,4 @@ TaskRabbit/src/backend/env/
 package-lock.json
 node_modules/
 TaskRabbit/src/venv/
+.DS_Store
