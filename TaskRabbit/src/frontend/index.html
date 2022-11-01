@@ -1,5 +1,3 @@
-
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -64,24 +62,29 @@
 
     <!--HOME-->
     <!---loopthroughfolders-->
-    <ul>
-      <!---item in tasks[]-->
-      <!---li v-for="folder in filteredFolders"> -->        
-        <div class="grid-container" v-for="f in folders">
-          <input class="item1" type="button" onclick="alert('TaskRabbit Folders!')">
-          <div class="item2">{{  f.name }}</div>  
-          <!---color css??-->
-          <!--color, show lists on click (open a new page)-->
-        </div>
-        <!---<button @click="deleteFolder(folder)">X</button>--->
-
-      </li>
-        <!---insert new folder--->
-        <h2>New Folder Name: {{ newFolder}}</h2>
-        <input v-model="newFolderName" v-on:keyup.enter="addFolder" placeholder="edit name" />
-        <input v-model="newFolderColor" v-on:keyup.enter="addFolder" placeholder="edit color" />
-      </ul>
-
+    <div>
+      <h2>New Folder Name: {{ newFolder}}</h2>
+      <input v-model="newFolderName" placeholder="edit name" />
+      <input v-model="newFolderColor" placeholder="edit color" />
+      <button @click="addFolder"> CREATE FOLDER </button>
+      
+      <div class="array">
+        <!---item in tasks[]-->
+        <!---li v-for="folder in filteredFolders"> -->        
+          <div v-for="f in folders">
+            <box class="box" onclick="location.href = 'folders.html'"> folder</box>
+            <div>{{  f.name }}</div>  
+            <!---color css??-->
+            <!--color, show lists on click (open a new page)-->
+          </div>
+          <!---<button @click="deleteFolder(folder)">X</button>--->
+      </div>
+      <!---insert new folder--->
+     
+    </div>
+    
+    
+    <br>
 
 
     
