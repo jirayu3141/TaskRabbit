@@ -371,9 +371,8 @@ const app = Vue.createApp({
         async getTasks(cList) {
             //cList is the current list that these tasks are from
             this.showTasks = true;
-            
             this.currentListId = cList.id; //get current folder
-
+            console.log("CURRENT LIST ID: %d", this.currentListId);
             const requestOptions = 
             {
                 method: "POST",
