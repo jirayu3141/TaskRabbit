@@ -172,7 +172,8 @@ const app = Vue.createApp({
         async getLists(cFolder) {
             //hide folders to show lists
             this.showFolders = false;
-            this.currentFolderId = cFolder.id; //get current folder
+            this.currentFolderId = cFolder.id;
+            console.log("THIS IS THE CURRENT FOLDERID %d", this.currentFolderId);
             //TODO : set folderID to currentFolderId
 
             console.log("getting all lists from this user");
@@ -182,7 +183,7 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    folderId: 3
+                    folderId: this.currentFolderId
                 })
             };
 
@@ -213,7 +214,7 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0,
+                    folderId: this.currentFolderId,
                     listName: this.newListName, 
                 })
             };
@@ -260,7 +261,7 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0,
+                    listId: this.currentListId,
                     taskName: this.newTaskName, 
                     taskTag: this.newTaskTag, 
                     taskDeadline: this.newTaskDeadline
@@ -370,14 +371,16 @@ const app = Vue.createApp({
         async getTasks(cList) {
             //cList is the current list that these tasks are from
             this.showTasks = true;
+            
             this.currentListId = cList.id; //get current folder
+
             const requestOptions = 
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: currentListId
+                    listId: this.currentListId
                 })
             };
 
