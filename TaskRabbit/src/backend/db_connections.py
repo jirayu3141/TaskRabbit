@@ -63,7 +63,10 @@ def get_folders(user_id):
     LEFT JOIN users ON user_folder.user_id = users.user_id
     WHERE users.user_id = %s"""
     cursor.execute(query1, (user_id,))
-    first_name = cursor.fetchone()[0]
+    if cursor.rowcount != 0:
+        first_name = cursor.fetchone()[0]
+    else:
+        first_name = "Peter"
     json_data = []
     for (_, folder_id, name, color) in cursor:
         json_data.append(
