@@ -57,7 +57,7 @@
 </head>
 <body>
   <div id="app">
-    <h1> {{ title }}</h1>
+    <h1 @click="goHome"> {{ title }}</h1>
     
 
     <!--HOME-->
@@ -86,6 +86,8 @@
       <!---insert new list--->
       <h2>Add a list: {{ newList}}</h2>
       <input v-model="newListName" v-on:keyup.enter="addList()" placeholder="new list name" />
+      <button @click="addList"> CREATE LIST</button>
+
       <!---li v-for="folder in filteredFolders"> -->        
       <div class="grid-container" v-for="l in lists">
         <button @click="toggleShowTasks(l)">{{  l.name }}</button>
@@ -96,6 +98,8 @@
     <br>    
 
       <div v-if="showTasks">
+        
+
           <!---loopthroughlist-->
           <ul>
             <!---item in tasks[]-->
@@ -110,15 +114,24 @@
 
             </li>
             <!---insert new task--->
-            <h2>New task is: {{ newTaskName }}</h2>
-            <input v-model="newTaskName" v-on:keyup.enter="addTask" placeholder="edit me" />
-            <input v-model="newTaskTag" v-on:keyup.enter="addTask" placeholder="edit tag" />
-            <input v-model="newTaskDeadline" v-on:keyup.enter="addTask" placeholder="edit deadline" />
-            <button @click="addTask">SUBMIT</button>
-            <br>
             <button @click="hideCompleted = !hideCompleted">
               {{ hideCompleted ? 'Show all' : 'Hide completed' }}
             </button>
+
+            <h2>New task is: {{ newTaskName }}</h2>
+            <input v-model="newTaskName" v-on:keyup.enter="addTask" placeholder="task" />
+            <input list="tags" name="tags" v-model="newTaskTag" placeholder="tag">
+              <datalist id="tags">
+                <option value="Important">
+              </datalist>
+            <input type="date" id="newTaskDeadline" v-model="newTaskDeadline">
+            <!--
+            <input v-model="newTaskTag" v-on:keyup.enter="addTask" placeholder="tag" />
+            <input v-model="newTaskDeadline" v-on:keyup.enter="addTask" placeholder="deadline" />
+            -->
+            <button @click="addTask">SUBMIT</button>
+            <br>
+            
           </ul>
       </div>
 

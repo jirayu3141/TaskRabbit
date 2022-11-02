@@ -4,7 +4,6 @@
 //pip install Flask-SQLAlchemy
 
 
-
 const app = Vue.createApp({
     //TODO: ckeck w backend on tag and deadline parsing
     //TODO: edit and delete tasks
@@ -15,7 +14,6 @@ const app = Vue.createApp({
         return {
             showTasks: false,
             showFolders: true,
-            checked: true,
             title: 'TaskRabbit',
 
             /*HOME */
@@ -60,6 +58,8 @@ const app = Vue.createApp({
         },
         goHome() {
             console.log("lets go to the home page!!");
+            this.showTasks = false;
+            this.showFolders = true;
             //TODO: redirect user to home page
         },
 
