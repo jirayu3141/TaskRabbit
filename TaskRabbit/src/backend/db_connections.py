@@ -153,7 +153,7 @@ def write_task(list_id, task_name, deadline, tag=0):
         # insert to folders table
         sql = "INSERT INTO tasks (task_id, description, is_completed, deadline, list_id, tag_id) VALUES (%s, %s, %s, %s, %s, %s)"
         # check if tag is null
-        if tag == 0 or tag == None:
+        if tag == 0 or tag == None or tag == '':
             val = (0,  task_name, False, deadline, list_id, 1)
         else:
             val = (0,  task_name, False, deadline, list_id, 2)
