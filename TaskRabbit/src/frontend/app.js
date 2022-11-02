@@ -106,7 +106,7 @@ const app = Vue.createApp({
             var tmpFolderStatus;
             var tmpFolderId;
 
-            console.log("trying to add a folder");
+            console.log("trying to add a folder %s", this.newFolderName);
             //connect to backend 
             const requestOptions = {
                 method: "POST",
@@ -123,8 +123,11 @@ const app = Vue.createApp({
             this.updatedAt = data.updatedAt;
 
             console.log("create folder status", data);
+
+
             tmpFolderStatus = data.status;
-            tmpFolderId = data.folderId;
+            tmpFolderId = data.folder_id;
+            console.log(tmpFolderStatus, tmpFolderId);
 
             //check status if folder is created: Status”: <int> (0 : success, 1 - already exist, -1 fail)
             if (tmpFolderStatus == -1) 
@@ -135,10 +138,11 @@ const app = Vue.createApp({
             { //already exists
                 alert('Folder ' + this.newFolderName + ' already exists!');
             }
-            else
+            else if (tmpFolderStatus == 0 && tmpFolderId != null)
             { //success 0
-                console.log("folder '%s' is created\n", this.newFolderName);
+                console.log("folder '%s' (%d) is created\n", this.newFolderName, tmpFolderId);
                 this.folders.push({id: tmpFolderId, name: this.newFolderName, color: this.newFolderColor});
+                
             }
 
             
@@ -183,7 +187,7 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    folderId: this.currentFolderId
+                    folderId: cFolder.id
                 })
             };
 
@@ -204,10 +208,7 @@ const app = Vue.createApp({
         },
 
         async addList() {
-            //allows user to add another task to their list
-            console.log("list '%s' is created\n", this.newListName);
-            this.lists.push({name: this.newListName});
-            
+            //allows user to add another task to their lisr            
     
             const requestOptions = {
                 method: "POST",
@@ -222,11 +223,27 @@ const app = Vue.createApp({
             const data = await response.json();
             this.updatedAt = data.updatedAt;
 
+            tmpListStatus = data.status;
+            tmpListId = data.list_id;
+            console.log(tmpListStatus, tmpListId);
 
+            //check status if folder is created: Status”: <int> (0 : success, 1 - already exist, -1 fail)
+            if (tmpListStatus == -1) 
+            { //error
+                alert('error');
+            }
+            else if (tmpListStatus == 0 && tmpListId != null)
+            { //success 0
+                console.log("folder '%s' (%d) is created\n", this.newFolderName, tmpFolderId);
+                this.lists.push({id: tmpListId, name: this.newListName});
+                
+            }
             //set back to empty text field
             this.newListName = '';
+            console.log("list '%s' is created\n", this.newListName);
 
-         }, 
+
+        }, 
 
          async deleteList(list) {
             //delete a specific list 
@@ -276,11 +293,13 @@ const app = Vue.createApp({
             tmpTaskId = data.taskId;
             tmpTaskStatus = data.status;
 
+            console.log(tmpTaskId, tmpTaskStatus);
+
             if (tmpTaskStatus == 1)
             { //fail
                 alert("error creating task!");
             }
-            else
+            else if (tmpTaskStatus == 0)
             { //success -> add task to local
                 console.log("task '%s' (%d) is sent\n", this.newTaskName, tmpTaskId);
                 this.tasks.push({id: tmpTaskId, name: this.newTaskName, is_completed: false, tag: this.newTaskTag, deadline: this.newTaskDeadline});
@@ -300,7 +319,7 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0, //TODO: get list number
+                    listId: this.currentListId,
                     taskId: task.id,
                     action: 'delete'
                     
@@ -317,7 +336,7 @@ const app = Vue.createApp({
             { //fail
                 alert("error deleting task!");
             }
-            else
+            else if (tmpDeleteStatus == 0)
             { //success -> delete task from local
                 console.log("deleting task: %s (%d)", task.name, task.id);
                 this.tasks = this.tasks.filter((t) => t !== task);
@@ -325,7 +344,7 @@ const app = Vue.createApp({
         
         },
         async editTask(task) {
-            console.log("changing competion of task " + task.name + task.id + "to" + task.is_completed);
+            console.log("changing competion of task " + task.name +" ("+ task.id + ") to" + task.is_completed);
             //change the is_completed variable in this specific task in the backend
             //check whether the task is changed to complete or incomplete
             var taskAction;
@@ -344,7 +363,7 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0, //TODO: get list number
+                    listId: this.currentListId,
                     taskId: task.id,
                     action: taskAction
                     
@@ -361,7 +380,7 @@ const app = Vue.createApp({
             { //fail
                 alert("error editing task!");
             }
-            else
+            else if (tmpEditStatus == 0)
             { //success -> delete task from local
                 console.log("editing task: %s (%d)", task.name, task.id);
                 task.is_completed = !task.is_completed;
@@ -379,7 +398,7 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: this.currentListId
+                    listId: cList.id
                 })
             };
 

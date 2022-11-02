@@ -72,9 +72,8 @@
         <!---item in tasks[]-->
         <!---li v-for="folder in filteredFolders"> -->        
           <div v-for="f in folders">
-            <box class="box" @click="getLists(f)"> folder</box>
-            <div>{{ f.name }}</div>  
-            <!---color css??-->
+            <box class="box" @click="getLists(f)"> {{ f.name }}</box>
+            
             <!--color, show lists on click (open a new page)-->
           </div>
           <!---<button @click="deleteFolder(folder)">X</button>--->
