@@ -63,10 +63,13 @@ def get_folders(user_id):
     LEFT JOIN users ON user_folder.user_id = users.user_id
     WHERE users.user_id = %s"""
     cursor.execute(query1, (user_id,))
-    if cursor.rowcount != 0:
-        first_name = cursor.fetchone()[0]
-    else:
-        first_name = "Peter"
+    print(cursor.statement)
+
+
+    first_name = "Peter"
+
+    #print number of rows in the resultset
+    print("Total number of rows in folders is: ", cursor.rowcount) 
     json_data = []
     for (_, folder_id, name, color) in cursor:
         json_data.append(
@@ -150,7 +153,7 @@ def write_task(list_id, task_name, deadline, tag=0):
         # insert to folders table
         sql = "INSERT INTO tasks (task_id, description, is_completed, deadline, list_id, tag_id) VALUES (%s, %s, %s, %s, %s, %s)"
         # check if tag is null
-        if tag == 0:
+        if tag == 0 or tag == None:
             val = (0,  task_name, False, deadline, list_id, 1)
         else:
             val = (0,  task_name, False, deadline, list_id, 2)
