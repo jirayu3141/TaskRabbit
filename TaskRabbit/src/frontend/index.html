@@ -114,6 +114,7 @@
             <input v-model="newTaskName" v-on:keyup.enter="addTask" placeholder="edit me" />
             <input v-model="newTaskTag" v-on:keyup.enter="addTask" placeholder="edit tag" />
             <input v-model="newTaskDeadline" v-on:keyup.enter="addTask" placeholder="edit deadline" />
+            <button @click="addTask">SUBMIT</button>
             <br>
             <button @click="hideCompleted = !hideCompleted">
               {{ hideCompleted ? 'Show all' : 'Hide completed' }}
