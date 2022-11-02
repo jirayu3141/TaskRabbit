@@ -57,10 +57,13 @@ const app = Vue.createApp({
             }
         },
         goHome() {
+            //redirect user to home page
             console.log("lets go to the home page!!");
-            this.showTasks = false;
             this.showFolders = true;
-            //TODO: redirect user to home page
+            this.showTasks = false;
+            //
+            this.lists.splice(0);
+            this.tasks.splice(0);
         },
 
          /*FOLDERS */
@@ -161,13 +164,15 @@ const app = Vue.createApp({
 
          /*LISTS */
 
-        toggleShowLists() {
-            console.log("show me my lists");
-           
+        toggleShowLists(cFolder) {
+            console.log("show me my tasks");
+            //don't grab task from backend twice
             if (!this.showLists) {
-                this.getLists();
+                this.getLists(cFolder);
+                this.showLists = !this.showLists;
             }
             else {
+                //remove all data from local task array
                 this.lists.splice(0);
             }
             this.showLists = !this.showLists;

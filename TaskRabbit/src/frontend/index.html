@@ -72,7 +72,7 @@
         <!---item in tasks[]-->
         <!---li v-for="folder in filteredFolders"> -->        
           <div v-for="f in folders">
-            <box class="box" @click="getLists(f)"> {{ f.name }}</box>
+            <box class="box" @click="toggleShowLists(f)"> {{ f.name }}</box>
             
             <!--color, show lists on click (open a new page)-->
           </div>
