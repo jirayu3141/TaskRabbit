@@ -62,7 +62,7 @@
 
     <!--HOME-->
     <!---loopthroughfolders-->
-    <div>
+    <div v-if="showFolders">
       <h2>New Folder Name: {{ newFolder}}</h2>
       <input v-model="newFolderName" placeholder="edit name" />
       <input v-model="newFolderColor" placeholder="edit color" />
@@ -72,8 +72,8 @@
         <!---item in tasks[]-->
         <!---li v-for="folder in filteredFolders"> -->        
           <div v-for="f in folders">
-            <box class="box" @click="getLists()" onclick="location.href = 'folders.html';"> folder</box>
-            <div>{{  f.name }}</div>  
+            <box class="box" @click="getLists(f)"> folder</box>
+            <div>{{ f.name }}</div>  
             <!---color css??-->
             <!--color, show lists on click (open a new page)-->
           </div>
@@ -81,6 +81,13 @@
       </div>
       <!---insert new folder--->
      
+
+    </div>
+    <div v-if="!showFolders">
+      <!---li v-for="folder in filteredFolders"> -->        
+      <div class="grid-container" v-for="l in lists">
+        <button @click="getTasks(l)">{{  l.name }}</button>
+      </div>
     </div>
     
     
@@ -88,7 +95,7 @@
 
 
     
-    <button @click="toggleShowTasks()"> SHOW TASKS</button>
+     <button @click="toggleShowTasks()"> SHOW TASKS</button>
     
 
       <div v-if="showTasks">

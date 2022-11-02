@@ -51,8 +51,10 @@
 <body>
   <div id="app">
     <h1> {{ title }}</h1>
+    <button @click="testGlobals()"> Globals</button>
 
     <!--HOME-->
+
     <!---loopthroughfolders-->
     <ul>
       <!---item in tasks[]-->
@@ -75,9 +77,13 @@
 
       <select name = "list" id="list"> <!---figure out the name and id values-->
         <li v-for="l in lists">
+        <!--
+          <option>value= "l.name">{{l.name}}</option>
+          -->
         <option value= "lists">list 1</option>
         <option value= "lists">list 2</option>
         <option value= "lists">list 3</option>
+      
       </li>
       </select>
 
