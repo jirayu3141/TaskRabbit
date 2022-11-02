@@ -131,12 +131,6 @@ def write_list(user_id, folder_id, list_name):
         cursor.execute(sql, val)
         written_list_id = cursor.lastrowid
 
-        # insert to user_folder table
-        print()
-        sql = "INSERT INTO user_folder (user_id, folder_id) VALUES (%s, %s)"
-        val = (user_id, cursor.lastrowid)
-        cursor.execute(sql, val)
-
         db.commit()
         cursor.close()
         # db.close()
