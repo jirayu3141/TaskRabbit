@@ -14,20 +14,24 @@ const app = Vue.createApp({
     data() {
         return {
             showTasks: false,
+            showFolders: true,
             checked: true,
             title: 'TaskRabbit',
 
             /*HOME */
+            currentFolderId: '',
             newFolderName: '',
             newFolderColor: '',
             folders: [],
 
             /*FOLDER */
+            currentListId: '',
             newListName: '',
             lists: [],
 
             
             /*TASKS */
+            currentTaskId: '',
             hideCompleted: false,
             taskId: 1,
             newTaskName: '',
@@ -47,6 +51,13 @@ const app = Vue.createApp({
 
     },
     methods:{
+        async testGlobals(){
+            console.log("getting global from list!");
+            for (const e of this.lists) 
+            {
+                console.log("listname: %s ", e.name);
+            }
+        },
         goHome() {
             console.log("lets go to the home page!!");
             //TODO: redirect user to home page
@@ -158,7 +169,12 @@ const app = Vue.createApp({
             this.showLists = !this.showLists;
 
         }, 
-        async getLists() {
+        async getLists(cFolder) {
+            //hide folders to show lists
+            this.showFolders = false;
+            this.currentFolderId = cFolder.id; //get current folder
+            //TODO : set folderID to currentFolderId
+
             console.log("getting all lists from this user");
             const requestOptions = 
             {
@@ -175,13 +191,13 @@ const app = Vue.createApp({
             this.postId = data.id;
             console.log(data); //data object from 
 
-            for (const e of data.folders) 
+            for (const e of data.lists) 
             { //iterate over all tasks and push to 'task' array
                 tmpListId = e.listId;
                 tmpListName = e.listName;
             
                 //push tasks to array
-                this.folders.push({id: tmpListId, name: tmpListName});
+                this.lists.push({id: tmpListId, name: tmpListName});
             }
 
         },
@@ -223,7 +239,7 @@ const app = Vue.createApp({
             console.log("show me my tasks");
             //don't grab task from backend twice
             if (!this.showTasks) {
-                this.getTasks();
+                this.getTasks(0);
             }
             else {
                 //remove all data from local task array
@@ -351,14 +367,17 @@ const app = Vue.createApp({
             }
 
         },
-        async getTasks() {
+        async getTasks(cList) {
+            //cList is the current list that these tasks are from
+            this.showTasks = true;
+            this.currentListId = cList.id; //get current folder
             const requestOptions = 
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0
+                    listId: currentListId
                 })
             };
 
@@ -385,6 +404,7 @@ const app = Vue.createApp({
     mounted() {
         //immediatly get the folders from home
         this.getFolders();
+        //this.getLists();
       },
 
 
