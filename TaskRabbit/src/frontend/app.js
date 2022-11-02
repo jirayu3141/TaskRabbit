@@ -236,11 +236,11 @@ const app = Vue.createApp({
         },
 
         /*TASKS */
-        toggleShowTasks() {
+        toggleShowTasks(cList) {
             console.log("show me my tasks");
             //don't grab task from backend twice
             if (!this.showTasks) {
-                this.getTasks(0);
+                this.getTasks(cList);
             }
             else {
                 //remove all data from local task array
@@ -370,9 +370,9 @@ const app = Vue.createApp({
         },
         async getTasks(cList) {
             //cList is the current list that these tasks are from
-            this.showTasks = true;
+            //this.showTasks = true;
             this.currentListId = cList.id; //get current folder
-            console.log("CURRENT LIST ID: %d", this.currentListId);
+            console.log("CURRENT LIST ID: %d",this.currentListId)
             const requestOptions = 
             {
                 method: "POST",

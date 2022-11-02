@@ -89,7 +89,7 @@
       <input v-model="newListName" v-on:keyup.enter="addList()" placeholder="new list name" />
       <!---li v-for="folder in filteredFolders"> -->        
       <div class="grid-container" v-for="l in lists">
-        <button @click="getTasks(l)">{{  l.name }}</button>
+        <button @click="toggleShowTasks(l)">{{  l.name }}</button>
       </div>
     </div>
     
