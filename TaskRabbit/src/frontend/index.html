@@ -110,10 +110,11 @@
 
             </li>
             <!---insert new task--->
-            <h2>New task is: {{ newTask }}</h2>
+            <h2>New task is: {{ newTaskName }}</h2>
             <input v-model="newTaskName" v-on:keyup.enter="addTask" placeholder="edit me" />
             <input v-model="newTaskTag" v-on:keyup.enter="addTask" placeholder="edit tag" />
             <input v-model="newTaskDeadline" v-on:keyup.enter="addTask" placeholder="edit deadline" />
+            <br>
             <button @click="hideCompleted = !hideCompleted">
               {{ hideCompleted ? 'Show all' : 'Hide completed' }}
             </button>
