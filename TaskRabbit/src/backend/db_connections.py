@@ -6,7 +6,7 @@ from error_handling import InvalidAPIUsage
 
 db = mysql.connector.connect(user='root', password='tAirftr1!!',
                              host='34.132.172.198',
-                             database='main')   
+                             database='main')
 
 
 connection_string = 'Attempting connection to DB'
@@ -232,5 +232,5 @@ def edit_task(task_id, action):
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
-    print(get_folders(1))
+    print(get_lists(1, 3))
     db.close()
