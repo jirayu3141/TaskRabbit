@@ -4,6 +4,7 @@ from mysql.connector import MySQLConnection, Error
 from sqlalchemy import create_engine, text
 from error_handling import InvalidAPIUsage
 
+
 db = mysql.connector.connect(user='root', password='tAirftr1!!',
                              host='34.132.172.198',
                              database='main')   
@@ -12,8 +13,9 @@ db = mysql.connector.connect(user='root', password='tAirftr1!!',
 connection_string = 'Attempting connection to DB'
 
 # connect to db using SQL Alchemy
-# engine = create_engine(
-#     'mysql+mysqlconnector://root:34.132.172.198:3306/main')
+engine = create_engine(
+    'mysql+mysqlconnector://root:tAirftr1!!@34.132.172.198:3306/main')
+
 
 
 def get_all_users():
@@ -228,9 +230,31 @@ def edit_task(task_id, action):
         print(e)
         raise InvalidAPIUsage(format(e))
 
+def delete_folder(folder_id):
+    try:
+        print(connection_string)
+        # delete folder
+        engine.execute(
+            text("DELETE FROM folders WHERE folder_id = :folder_id"), folder_id=folder_id)
+        print('Folder deleted')
+    except Exception as e:
+        print(e)
+        raise InvalidAPIUsage(format(e))
+
+def delete_list(list_id):
+    try:
+        print(connection_string)
+        # delete list
+        engine.execute(
+            text("DELETE FROM lists WHERE list_id = :list_id"), list_id=list_id)
+        print('List deleted')
+    except Exception as e:
+        print(e)
+        raise InvalidAPIUsage(format(e))
+
 
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
-    print(get_folders(1))
+    delete_list(1)
     db.close()
