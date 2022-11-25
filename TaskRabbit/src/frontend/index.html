@@ -65,16 +65,23 @@
     <div v-if="showFolders">
       <h2>New Folder Name: {{ newFolder}}</h2>
       <input v-model="newFolderName" placeholder="edit name" />
-      <input v-model="newFolderColor" placeholder="edit color" />
-      <button @click="addFolder"> CREATE FOLDER </button>
-      
+      <input v-model="newFolderColor" type="radio" id="color1" name="FolderColor1" value="1">
+        <label for="color1">blue</label>
+        <input v-model="newFolderColor" type="radio" id="color2" name="FolderColor2" value="2">
+        <label for="color2">yellow</label>
+        <input v-model="newFolderColor" type="radio" id="color3" name="FolderColor3" value="3">
+        <label for="color2">green</label>
+        <br>
+      <button @click="addFolder"> __CREATE FOLDER </button>
+      <br><br>
       <div class="array">
         <!---item in tasks[]-->
         <!---li v-for="folder in filteredFolders"> -->        
           <div v-for="f in folders">
-            <box class="box" @click="toggleShowLists(f)"> {{ f.name }}</box>
-            
-            <!--color, show lists on click (open a new page)-->
+            <!----color, show lists on click (open a new page)-->
+            <box v-if="displayFolderColor(f, 1)" id="fcolor1" class="box" @click="toggleShowLists(f)"> {{ f.name }}</box>
+            <box v-if="displayFolderColor(f, 2)" id="fcolor2" class="box" @click="toggleShowLists(f)"> {{ f.name }}</box>
+            <box v-if="displayFolderColor(f, 3)" id="fcolor3" class="box" @click="toggleShowLists(f)"> {{ f.name }}</box>
           </div>
           <!---<button @click="deleteFolder(folder)">X</button>--->
       </div>
@@ -140,6 +147,12 @@
 
    
   </div>
+  <script>
+    //just temp colors for now
+    document.getElementById("fcolor1").style.background = "#5bc0eb";
+    document.getElementById("fcolor2").style.background = "#fde74c";
+    document.getElementById("fcolor3").style.background = "#9bc53d";
+    </script>
   <script src="app.js"></script>
 </body>
 </html>

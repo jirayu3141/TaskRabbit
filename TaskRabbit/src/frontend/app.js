@@ -105,9 +105,30 @@ const app = Vue.createApp({
             }
 
         },
+        displayFolderColor(folderC, colorNum) {
+            //returns whether that color matches with the folder's color
+            //console.log("COLOR CHECK!!");
+            var fcolor = parseInt(folderC.color); //this folder's color           
+
+            if (fcolor == colorNum)
+            {
+                //console.log("true");
+                return true;
+            }
+            
+            //console.log("false");
+            return false;
+
+        },
         async addFolder() {
             var tmpFolderStatus;
             var tmpFolderId;
+
+            //TODO: check against empty name and color
+            if (this.newFolderColor == '')
+            {
+                this.newFolderColor = '1';
+            }
 
             console.log("trying to add a folder %s", this.newFolderName);
             //connect to backend 
