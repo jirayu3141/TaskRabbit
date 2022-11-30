@@ -16,8 +16,8 @@
       display: grid;
       text-align: left;
       grid-template-areas:
-        'check main main main'
-        'empty footer footer footer';
+        'check main main'
+        'empty footer footer';
     }
     
     body {
@@ -36,8 +36,6 @@
       align-items: center;
       justify-content: space-between;
     }
-
-    
     .box {
     padding: 60px 0;
     width: 200px;
@@ -46,51 +44,114 @@
     margin: 10px;
     display: inline-block;
     }
-
     .array {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: flex-start;
     }
+
+  /* Add styles to the popup container */
+  .popup-container {
+    width: 400px;
+    padding: 15px;
+    justify-content: center;
+    text-align: center;
+    background-color: white;
+  }
+
+  /* Add styles to the form container */
+  .form-container {
+    justify-content: center;
+    text-align: justify;
+    padding: 15px;
+  }
+
+ .space {
+  display: flex;
+  justify-content: space-between;
+  }
+
+ .center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
   </style>
 </head>
 <body>
   <div id="app">
-    <h1> {{ title }}</h1>
     
-
+    <h1 @click="goHome"> {{ title }}</h1>
+    
+    
     <!--HOME-->
     <!---loopthroughfolders-->
-    <div>
-      <h2>New Folder Name: {{ newFolder}}</h2>
-      <input v-model="newFolderName" placeholder="edit name" />
-      <input v-model="newFolderColor" placeholder="edit color" />
-      <button @click="addFolder"> CREATE FOLDER </button>
+    <div v-if="showFolders">
+
+      <div v-if="showPopup" class="center">
+        <!---folder popup-->
+        <form class="popup-container">
+          <h2>Create a Folder</h2>
+          <div class="form-container">
+              <label for="newFolderName"><b>Folder Name: </b></label>
+              <input v-model="newFolderName" placeholder="edit name" name="newFolderName" required/>
+              <br><br>
+              <label for="newFolderColor"><b>Folder Color: </b></label>
+              <div>
+                <input v-model="newFolderColor" type="radio" id="color1" name="FolderColor1" value="1">
+                <label for="color1">blue</label>
+                <input v-model="newFolderColor" type="radio" id="color2" name="FolderColor2" value="2">
+                <label for="color2">yellow</label>
+                <input v-model="newFolderColor" type="radio" id="color3" name="FolderColor3" value="3">
+                <label for="color2">green</label>
+              </div>
+              <br>
+          </div>
+          <div class="space">
+            <button @click="toggleShowPopup"> CLOSE</button>
+            <button @click="addFolder(); toggleShowPopup();"> SAVE</button>
+          </div>
+          
+          
+        </form>
+      </div>
+
       
       <div class="array">
         <!---item in tasks[]-->
+        <box @click="toggleShowPopup" class="box" >+</box>
+        <!---item in tasks[]-->
         <!---li v-for="folder in filteredFolders"> -->        
           <div v-for="f in folders">
-            <box class="box" onclick="location.href = 'folders.html'"> folder</box>
-            <div>{{  f.name }}</div>  
-            <!---color css??-->
-            <!--color, show lists on click (open a new page)-->
+            <!----color, show lists on click (open a new page)-->
+            <box v-if="displayFolderColor(f, 1)" id="fcolor1" class="box" @click="toggleShowLists(f)"> {{ f.name }}</box>
+            <box v-if="displayFolderColor(f, 2)" id="fcolor2" class="box" @click="toggleShowLists(f)"> {{ f.name }}</box>
+            <box v-if="displayFolderColor(f, 3)" id="fcolor3" class="box" @click="toggleShowLists(f)"> {{ f.name }}</box>
           </div>
           <!---<button @click="deleteFolder(folder)">X</button>--->
       </div>
       <!---insert new folder--->
      
+
+    </div>
+    <div v-if="!showFolders">
+      <!---insert new list--->
+      <h2>Add a list: {{ newList}}</h2>
+      <input v-model="newListName" v-on:keyup.enter="addList()" placeholder="new list name" />
+      <button @click="addList"> CREATE LIST</button>
+
+      <!---li v-for="folder in filteredFolders"> -->        
+      <div class="grid-container" v-for="l in lists">
+        <button @click="toggleShowTasks(l)">{{  l.name }}</button>
+      </div>
     </div>
     
     
-    <br>
-
-
-    
-    <button @click="toggleShowTasks()"> SHOW TASKS</button>
-    
-
+    <br>    
       <div v-if="showTasks">
           <!---loopthroughlist-->
           <ul>
@@ -106,13 +167,24 @@
 
             </li>
             <!---insert new task--->
-            <h2>New task is: {{ newTask }}</h2>
-            <input v-model="newTaskName" v-on:keyup.enter="addTask" placeholder="edit me" />
-            <input v-model="newTaskTag" v-on:keyup.enter="addTask" placeholder="edit tag" />
-            <input v-model="newTaskDeadline" v-on:keyup.enter="addTask" placeholder="edit deadline" />
             <button @click="hideCompleted = !hideCompleted">
               {{ hideCompleted ? 'Show all' : 'Hide completed' }}
             </button>
+
+            <h2>New task is: {{ newTaskName }}</h2>
+            <input v-model="newTaskName" v-on:keyup.enter="addTask" placeholder="task" />
+            <input list="tags" name="tags" v-model="newTaskTag" placeholder="tag">
+              <datalist id="tags">
+                <option value="Important">
+              </datalist>
+            <input type="date" id="newTaskDeadline" v-model="newTaskDeadline">
+            <!--
+            <input v-model="newTaskTag" v-on:keyup.enter="addTask" placeholder="tag" />
+            <input v-model="newTaskDeadline" v-on:keyup.enter="addTask" placeholder="deadline" />
+            -->
+            <button @click="addTask">SUBMIT</button>
+            <br>
+            
           </ul>
       </div>
 
@@ -121,6 +193,14 @@
 
    
   </div>
+  <script>
+    //just temp colors for now
+    document.getElementById("fcolor1").style.background = "#5bc0eb";
+    document.getElementById("fcolor2").style.background = "#fde74c";
+    document.getElementById("fcolor3").style.background = "#9bc53d";
+    </script>
+
   <script src="app.js"></script>
 </body>
 </html>
+Footer

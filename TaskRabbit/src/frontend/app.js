@@ -4,7 +4,6 @@
 //pip install Flask-SQLAlchemy
 
 
-
 const app = Vue.createApp({
     //TODO: ckeck w backend on tag and deadline parsing
     //TODO: edit and delete tasks
@@ -13,27 +12,34 @@ const app = Vue.createApp({
     //TODO: seperate functions into dif files
     data() {
         return {
+            showPopup: false,
             showTasks: false,
-            checked: true,
+            showFolders: true,
             title: 'TaskRabbit',
 
             /*HOME */
+            currentFolderId: '',
+            currentFolderName: '',
             newFolderName: '',
             newFolderColor: '',
             folders: [],
 
             /*FOLDER */
+            currentListId: '',
             newListName: '',
             lists: [],
 
             
             /*TASKS */
+            currentTaskId: '',
             hideCompleted: false,
             taskId: 1,
             newTaskName: '',
             newTaskTag: '',
             newTaskDeadline: '',
             tasks: [],
+
+
         }
     },
     computed: {
@@ -47,13 +53,42 @@ const app = Vue.createApp({
 
     },
     methods:{
+        async testGlobals(){
+            console.log("getting global from list!");
+            for (const e of this.lists) 
+            {
+                console.log("listname: %s ", e.name);
+            }
+        },
         goHome() {
+            //redirect user to home page
             console.log("lets go to the home page!!");
-            //TODO: redirect user to home page
+            this.showFolders = true;
+            this.showTasks = false;
+            //
+            this.lists.splice(0);
+            this.tasks.splice(0);
+        },
+        toggleShowPopup(scope) {
+            //change value of whether users can see the popup creation screen
+            console.log("show me my popup");
+            this.showPopup = !this.showPopup;
+
+
+            //TODO: empty all unsaved inputs depending on what scope
+            if (scope == 0)
+            { //clear folder creation prompt
+                this.newFolderName = ''; 
+                this.newFolderColor = ''; 
+            }
+            else if (scope == 1)
+            { //clear list creation prompt
+                this.newListName = '';
+            }
         },
 
          /*FOLDERS */
-        toggleShowFolders() {
+        async toggleShowFolders() {
             console.log("show me my folders");
            
             if (!this.showFolders) {
@@ -91,11 +126,40 @@ const app = Vue.createApp({
             }
 
         },
+        displayFolderColor(folderC, colorNum) {
+            //returns whether that color matches with the folder's color
+            //console.log("COLOR CHECK!!");
+            var fcolor = parseInt(folderC.color); //this folder's color           
+
+            if (fcolor == colorNum)
+            {
+                //console.log("true");
+                return true;
+            }
+            
+            //console.log("false");
+            return false;
+
+        },
         async addFolder() {
             var tmpFolderStatus;
             var tmpFolderId;
 
-            console.log("trying to add a folder");
+            //remove extra whitespace tp check filename
+            this.newFolderName = this.newFolderName.trim();
+            if (this.newFolderName == "")
+            {
+                alert("Please insert a name for your folder.");
+                return;
+            }
+            //check against empty color
+            if (this.newFolderColor == '')
+            {   //default folder color
+                this.newFolderColor = '1';
+            }
+
+            console.log("trying to add a folder %s", this.newFolderName);
+            
             //connect to backend 
             const requestOptions = {
                 method: "POST",
@@ -112,8 +176,11 @@ const app = Vue.createApp({
             this.updatedAt = data.updatedAt;
 
             console.log("create folder status", data);
+
+
             tmpFolderStatus = data.status;
-            tmpFolderId = data.folderId;
+            tmpFolderId = data.folder_id;
+            console.log(tmpFolderStatus, tmpFolderId);
 
             //check status if folder is created: Status”: <int> (0 : success, 1 - already exist, -1 fail)
             if (tmpFolderStatus == -1) 
@@ -124,16 +191,15 @@ const app = Vue.createApp({
             { //already exists
                 alert('Folder ' + this.newFolderName + ' already exists!');
             }
-            else
+            else if (tmpFolderStatus == 0 && tmpFolderId != null)
             { //success 0
-                console.log("folder '%s' is created\n", this.newFolderName);
+                console.log("folder '%s' (%d) is created\n", this.newFolderName, tmpFolderId);
                 this.folders.push({id: tmpFolderId, name: this.newFolderName, color: this.newFolderColor});
+                //on success set back to empty text field
+                this.newFolderColor = '';
+                this.newFolderName = '';
+                this.showPopup = false;
             }
-
-            
-            //set back to empty text field
-            this.newFolderName = ''; 
-            this.newFolderColor = ''; 
 
         }, 
         async deleteFolder(folder) {
@@ -146,58 +212,70 @@ const app = Vue.createApp({
 
          /*LISTS */
 
-        toggleShowLists() {
-            console.log("show me my lists");
-           
+        toggleShowLists(cFolder) {
+            console.log("show me my tasks");
+            //don't grab task from backend twice
             if (!this.showLists) {
-                this.getLists();
+                this.getLists(cFolder);
+                this.showLists = !this.showLists; //change display var
             }
             else {
+                //remove all data from local task array
                 this.lists.splice(0);
             }
             this.showLists = !this.showLists;
 
         }, 
-        async getLists() {
-            console.log("getting all lists from this user");
+        async getLists(cFolder) {
+            //hide folders to show lists
+            this.showFolders = false;
+            this.currentFolderId = cFolder.id;
+            this.currentFolderName = cFolder.name;
+
             const requestOptions = 
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    folderId: 0
+                    folderId: this.currentFolderId
                 })
             };
+            console.log("THIS IS THE CURRENT FOLDERID", cFolder, requestOptions);
 
             const response = await fetch("http://127.0.0.1:5000/folder", requestOptions);
             const data = await response.json();
             this.postId = data.id;
             console.log(data); //data object from 
 
-            for (const e of data.folders) 
+            for (const e of data.lists) 
             { //iterate over all tasks and push to 'task' array
                 tmpListId = e.listId;
                 tmpListName = e.listName;
             
                 //push tasks to array
-                this.folders.push({id: tmpListId, name: tmpListName});
+                this.lists.push({id: tmpListId, name: tmpListName});
             }
 
         },
 
         async addList() {
-            //allows user to add another task to their list
-            console.log("list '%s' is created\n", this.newListName);
-            this.lists.push({name: this.newListName});
-            
+            //allows user to add another task to their lisr            
     
+            //remove extra whitespace tp check filename
+            this.newListName = this.newListName.trim();
+            if (this.newListName == "")
+            {
+                alert("Please insert a name for your list.");
+                return;
+            }
+
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0,
+                    folderId: this.currentFolderId,
                     listName: this.newListName, 
                 })
             };
@@ -205,11 +283,26 @@ const app = Vue.createApp({
             const data = await response.json();
             this.updatedAt = data.updatedAt;
 
+            tmpListStatus = data.status;
+            tmpListId = data.list_id;
+            console.log(tmpListStatus, tmpListId);
 
-            //set back to empty text field
+            //check status if folder is created: Status”: <int> (0 : success, 1 - already exist, -1 fail)
+            if (tmpListStatus == -1) 
+            { //error
+                alert('error');
+            }
+            else if (tmpListStatus == 0 && tmpListId != null)
+            { //success 0
+                console.log("folder '%s' (%d) is created\n", this.newFolderName, tmpFolderId);
+                this.lists.push({id: tmpListId, name: this.newListName});
+            }
+            
+            console.log("list '%s' is created\n", this.newListName);
+            //on success reset var
             this.newListName = '';
-
-         }, 
+            this.showPopup = false;
+        }, 
 
          async deleteList(list) {
             //delete a specific list 
@@ -219,11 +312,11 @@ const app = Vue.createApp({
         },
 
         /*TASKS */
-        toggleShowTasks() {
+        toggleShowTasks(cList) {
             console.log("show me my tasks");
             //don't grab task from backend twice
             if (!this.showTasks) {
-                this.getTasks();
+                this.getTasks(cList);
             }
             else {
                 //remove all data from local task array
@@ -244,7 +337,7 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0,
+                    listId: this.currentListId,
                     taskName: this.newTaskName, 
                     taskTag: this.newTaskTag, 
                     taskDeadline: this.newTaskDeadline
@@ -259,11 +352,13 @@ const app = Vue.createApp({
             tmpTaskId = data.taskId;
             tmpTaskStatus = data.status;
 
+            console.log(tmpTaskId, tmpTaskStatus);
+
             if (tmpTaskStatus == 1)
             { //fail
                 alert("error creating task!");
             }
-            else
+            else if (tmpTaskStatus == 0)
             { //success -> add task to local
                 console.log("task '%s' (%d) is sent\n", this.newTaskName, tmpTaskId);
                 this.tasks.push({id: tmpTaskId, name: this.newTaskName, is_completed: false, tag: this.newTaskTag, deadline: this.newTaskDeadline});
@@ -283,7 +378,7 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0, //TODO: get list number
+                    listId: this.currentListId,
                     taskId: task.id,
                     action: 'delete'
                     
@@ -300,7 +395,7 @@ const app = Vue.createApp({
             { //fail
                 alert("error deleting task!");
             }
-            else
+            else if (tmpDeleteStatus == 0)
             { //success -> delete task from local
                 console.log("deleting task: %s (%d)", task.name, task.id);
                 this.tasks = this.tasks.filter((t) => t !== task);
@@ -308,7 +403,7 @@ const app = Vue.createApp({
         
         },
         async editTask(task) {
-            console.log("changing competion of task " + task.name + task.id + "to" + task.is_completed);
+            console.log("changing competion of task " + task.name +" ("+ task.id + ") to" + task.is_completed);
             //change the is_completed variable in this specific task in the backend
             //check whether the task is changed to complete or incomplete
             var taskAction;
@@ -327,7 +422,7 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0, //TODO: get list number
+                    listId: this.currentListId,
                     taskId: task.id,
                     action: taskAction
                     
@@ -344,21 +439,25 @@ const app = Vue.createApp({
             { //fail
                 alert("error editing task!");
             }
-            else
+            else if (tmpEditStatus == 0)
             { //success -> delete task from local
                 console.log("editing task: %s (%d)", task.name, task.id);
                 task.is_completed = !task.is_completed;
             }
 
         },
-        async getTasks() {
+        async getTasks(cList) {
+            //cList is the current list that these tasks are from
+            //this.showTasks = true;
+            this.currentListId = cList.id; //get current folder
+            console.log("CURRENT LIST ID: %d",this.currentListId)
             const requestOptions = 
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    listId: 0
+                    listId: cList.id
                 })
             };
 
@@ -376,7 +475,7 @@ const app = Vue.createApp({
                 tmpTaskDeadline = e.taskDeadline;
                 //push tasks to array
                 console.log("task %s (%d)", tmpTaskName, tmpTaskIsCompleted);
-                    this.tasks.push({id: tmpTaskId, name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag_id: tmpTaskTag, deadline: tmpTaskDeadline});
+                    this.tasks.push({id: tmpTaskId, name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag: tmpTaskTag, deadline: tmpTaskDeadline});
             }
 
           }, 
@@ -385,6 +484,7 @@ const app = Vue.createApp({
     mounted() {
         //immediatly get the folders from home
         this.getFolders();
+        //this.getLists();
       },
 
 
