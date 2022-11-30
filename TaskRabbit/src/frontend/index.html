@@ -94,19 +94,18 @@
     <h1 @click="goHome"> {{ title }}</h1>
     
     
-    <!--HOME-->
-    <!---loopthroughfolders-->
+    <!--/HOME-->
     <div v-if="showFolders">
-
+      <!---folder popup-->
       <div v-if="showPopup" class="center">
-        <!---folder popup-->
-        <form class="popup-container">
+        <div class="popup-container">
           <h2>Create a Folder</h2>
           <div class="form-container">
               <label for="newFolderName"><b>Folder Name: </b></label>
               <input v-model="newFolderName" placeholder="edit name" name="newFolderName" required/>
               <br><br>
               <label for="newFolderColor"><b>Folder Color: </b></label>
+
               <!--color radios-->
               <div class="spaceAround">
                 <div>
@@ -124,20 +123,18 @@
               </div>
               <br>
           </div>
+          <!--exit popup buttons-->
           <div class="spaceBtwn">
-            <button @click="toggleShowPopup"> CLOSE</button>
+            <button @click="toggleShowPopup(0)"> CLOSE</button>
             <button @click="addFolder"> SAVE</button>
           </div>
-          
-          
-        </form>
+        </div>
       </div>
 
-      
+      <!--show all folders-->
       <div class="array">
-        <!---item in tasks[]-->
-        <box @click="toggleShowPopup" class="box" >+</box>
-        <!---item in tasks[]-->
+        <!--prompt for create folder-->
+        <box @click="toggleShowPopup(0)" class="box" >+</box>
         <!---li v-for="folder in filteredFolders"> -->        
           <div v-for="f in folders">
             <!----color, show lists on click (open a new page)-->
@@ -147,43 +144,57 @@
           </div>
           <!---<button @click="deleteFolder(folder)">X</button>--->
       </div>
-      <!---insert new folder--->
-     
-
     </div>
-    <div v-if="!showFolders">
-      <!---insert new list--->
-      <h2>Add a list: {{ newList}}</h2>
-      <input v-model="newListName" v-on:keyup.enter="addList()" placeholder="new list name" />
-      <button @click="addList"> CREATE LIST</button>
 
-      <!---li v-for="folder in filteredFolders"> -->        
+    <!--/FOLDER-->
+    <div v-if="!showFolders">
+      <!---list popup-->
+      <div v-if="showPopup" class="center">
+        <div class="popup-container">
+          <h2>Create a List</h2>
+          <div class="form-container">
+              <label for="newListName"><b>List Name: </b></label>
+              <input v-model="newListName" placeholder="edit name" name="newListName" required/>
+              <br>
+          </div>
+          <!--exit popup buttons-->
+          <div class="spaceBtwn">
+            <button @click="toggleShowPopup(1)"> CLOSE</button>
+            <button @click="addList"> SAVE</button>
+          </div>
+        </div>
+      </div>
+
+      <!---prompt create list------>
+      <p>Currently in folder "{{currentFolderName}}"</p>
+      <box @click="toggleShowPopup(1)" class="box" >+</box>
+      <!--show all lists in this folder----->        
       <div class="grid-container" v-for="l in lists">
         <button @click="toggleShowTasks(l)">{{  l.name }}</button>
       </div>
     </div>
     
+    <br>   
     
-    <br>    
-      <div v-if="showTasks">
-          <!---loopthroughlist-->
+    <!--/LIST-->
+       <div v-if="showTasks">
+          <!---show all tasks in this list-->
           <ul>
             <!---item in tasks[]-->
             <li v-for="task in filteredTasks">
-              <!---TODO: tell backend refreshed data about task completion-->
               <div class="grid-container">
                 <input class="item1" type="checkbox" :checked="task.is_completed" @click="editTask(task)">
                 <div class="item2">{{  task.name }}</div>  
                 <sub class="item3">{{ task.tag }} {{ task.deadline }}</sub>
               </div>
               <button @click="deleteTask(task)">X</button>
-
             </li>
+
             <!---insert new task--->
             <button @click="hideCompleted = !hideCompleted">
               {{ hideCompleted ? 'Show all' : 'Hide completed' }}
             </button>
-
+            <!--tag creation bar-->
             <h2>New task is: {{ newTaskName }}</h2>
             <input v-model="newTaskName" v-on:keyup.enter="addTask" placeholder="task" />
             <input list="tags" name="tags" v-model="newTaskTag" placeholder="tag">
@@ -191,21 +202,13 @@
                 <option value="Important">
               </datalist>
             <input type="date" id="newTaskDeadline" v-model="newTaskDeadline">
-            <!--
-            <input v-model="newTaskTag" v-on:keyup.enter="addTask" placeholder="tag" />
-            <input v-model="newTaskDeadline" v-on:keyup.enter="addTask" placeholder="deadline" />
-            -->
             <button @click="addTask">SUBMIT</button>
             <br>
-            
           </ul>
       </div>
-
-    <br>   
-
-
-   
+      <br> 
   </div>
+
   <script>
     //just temp colors for now
     document.getElementById("fcolor1").style.background = "#5bc0eb";
@@ -215,4 +218,4 @@
 
   <script src="app.js"></script>
 </body>
-</html>
+</html

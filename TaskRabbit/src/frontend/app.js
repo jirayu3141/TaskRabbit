@@ -19,6 +19,7 @@ const app = Vue.createApp({
 
             /*HOME */
             currentFolderId: '',
+            currentFolderName: '',
             newFolderName: '',
             newFolderColor: '',
             folders: [],
@@ -68,18 +69,26 @@ const app = Vue.createApp({
             this.lists.splice(0);
             this.tasks.splice(0);
         },
-        toggleShowPopup() {
+        toggleShowPopup(scope) {
             //change value of whether users can see the popup creation screen
             console.log("show me my popup");
             this.showPopup = !this.showPopup;
 
-            //TODO: empty all unsaved inputs
-            this.newFolderName = ''; 
-            this.newFolderColor = ''; 
+
+            //TODO: empty all unsaved inputs depending on what scope
+            if (scope == 0)
+            { //clear folder creation prompt
+                this.newFolderName = ''; 
+                this.newFolderColor = ''; 
+            }
+            else if (scope == 1)
+            { //clear list creation prompt
+                this.newListName = '';
+            }
         },
 
          /*FOLDERS */
-        toggleShowFolders() {
+        async toggleShowFolders() {
             console.log("show me my folders");
            
             if (!this.showFolders) {
@@ -140,7 +149,7 @@ const app = Vue.createApp({
             this.newFolderName = this.newFolderName.trim();
             if (this.newFolderName == "")
             {
-                alert("Please insert a filename.");
+                alert("Please insert a name for your folder.");
                 return;
             }
             //check against empty color
@@ -148,7 +157,7 @@ const app = Vue.createApp({
             {   //default folder color
                 this.newFolderColor = '1';
             }
-            
+
             console.log("trying to add a folder %s", this.newFolderName);
             
             //connect to backend 
@@ -186,12 +195,12 @@ const app = Vue.createApp({
             { //success 0
                 console.log("folder '%s' (%d) is created\n", this.newFolderName, tmpFolderId);
                 this.folders.push({id: tmpFolderId, name: this.newFolderName, color: this.newFolderColor});
-                
+                //on success set back to empty text field
+                this.newFolderColor = '';
+                this.newFolderName = '';
+                this.showPopup = false;
             }
 
-            
-            //set back to empty text field
-            toggleShowPopup(); //close dialog on success
         }, 
         async deleteFolder(folder) {
             //delete a specific folder 
@@ -221,8 +230,8 @@ const app = Vue.createApp({
             //hide folders to show lists
             this.showFolders = false;
             this.currentFolderId = cFolder.id;
+            this.currentFolderName = cFolder.name;
 
-            
             const requestOptions = 
             {
                 method: "POST",
@@ -253,6 +262,14 @@ const app = Vue.createApp({
         async addList() {
             //allows user to add another task to their lisr            
     
+            //remove extra whitespace tp check filename
+            this.newListName = this.newListName.trim();
+            if (this.newListName == "")
+            {
+                alert("Please insert a name for your list.");
+                return;
+            }
+
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -279,13 +296,12 @@ const app = Vue.createApp({
             { //success 0
                 console.log("folder '%s' (%d) is created\n", this.newFolderName, tmpFolderId);
                 this.lists.push({id: tmpListId, name: this.newListName});
-                
             }
-            //set back to empty text field
-            this.newListName = '';
+            
             console.log("list '%s' is created\n", this.newListName);
-
-
+            //on success reset var
+            this.newListName = '';
+            this.showPopup = false;
         }, 
 
          async deleteList(list) {
