@@ -16,8 +16,8 @@
       display: grid;
       text-align: left;
       grid-template-areas:
-        'check main main main'
-        'empty footer footer footer';
+        'check main main'
+        'empty footer footer';
     }
     
     body {
@@ -36,8 +36,6 @@
       align-items: center;
       justify-content: space-between;
     }
-
-    
     .box {
     padding: 60px 0;
     width: 200px;
@@ -46,7 +44,6 @@
     margin: 10px;
     display: inline-block;
     }
-
     .array {
       display: flex;
       flex-wrap: wrap;
@@ -54,82 +51,79 @@
       justify-content: flex-start;
     }
 
-    /* The popup form - hidden by default */
-  .form-popup {
-    display: centered;
-    position: fixed;
-    bottom: 0;
-    right: 15px;
-    border: 3px solid #f1f1f1;
-    z-index: 9;
+  /* Add styles to the popup container */
+  .popup-container {
+    width: 400px;
+    padding: 15px;
+    justify-content: center;
+    text-align: center;
+    background-color: white;
   }
 
   /* Add styles to the form container */
   .form-container {
-    max-width: 300px;
-    padding: 10px;
-    background-color: white;
-  }
-
-  /* Full-width input fields */
-  .form-container input[type=text], .form-container input[type=password] {
-    width: 100%;
+    justify-content: center;
+    text-align: justify;
     padding: 15px;
-    margin: 5px 0 22px 0;
-    border: none;
-    background: #f1f1f1;
   }
 
-  /* When the inputs get focus, do something */
-  .form-container input[type=text]:focus, .form-container input[type=password]:focus {
-    background-color: #ddd;
-    outline: none;
+ .space {
+  display: flex;
+  justify-content: space-between;
   }
 
-  /* Set a style for the submit/login button */
-  .form-container .btn {
-    background-color: #04AA6D;
-    color: white;
-    padding: 16px 20px;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    margin-bottom:10px;
-    opacity: 0.8;
-  }
-
-  /* Add a red background color to the cancel button */
-  .form-container .cancel {
-    background-color: red;
-  }
-
-  /* Add some hover effects to buttons */
-  .form-container .btn:hover, .open-button:hover {
-    opacity: 1;
-  }
-
+ .center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
   </style>
 </head>
 <body>
   <div id="app">
+    
     <h1 @click="goHome"> {{ title }}</h1>
     
-
+    
     <!--HOME-->
     <!---loopthroughfolders-->
     <div v-if="showFolders">
-      <h2>New Folder Name: {{ newFolder}}</h2>
-      <input v-model="newFolderName" placeholder="edit name" />
-      <input v-model="newFolderColor" type="radio" id="color1" name="FolderColor1" value="1">
-        <label for="color1">blue</label>
-        <input v-model="newFolderColor" type="radio" id="color2" name="FolderColor2" value="2">
-        <label for="color2">yellow</label>
-        <input v-model="newFolderColor" type="radio" id="color3" name="FolderColor3" value="3">
-        <label for="color2">green</label>
-        <br>
-      <button @click="addFolder"> __CREATE FOLDER </button>
-      <br><br>
+
+      <div v-if="showPopup" class="center">
+        <!---folder popup-->
+        <form class="popup-container">
+          <h2>Create a Folder</h2>
+          <div class="form-container">
+              <label for="newFolderName"><b>Folder Name: </b></label>
+              <input v-model="newFolderName" placeholder="edit name" name="newFolderName" required/>
+              <br><br>
+              <label for="newFolderColor"><b>Folder Color: </b></label>
+              <div>
+                <input v-model="newFolderColor" type="radio" id="color1" name="FolderColor1" value="1">
+                <label for="color1">blue</label>
+                <input v-model="newFolderColor" type="radio" id="color2" name="FolderColor2" value="2">
+                <label for="color2">yellow</label>
+                <input v-model="newFolderColor" type="radio" id="color3" name="FolderColor3" value="3">
+                <label for="color2">green</label>
+              </div>
+              <br>
+          </div>
+          <div class="space">
+            <button @click="toggleShowPopup"> CLOSE</button>
+            <button @click="addFolder(); toggleShowPopup();"> SAVE</button>
+          </div>
+          
+          
+        </form>
+      </div>
+
+      
       <div class="array">
+        <!---item in tasks[]-->
+        <box @click="toggleShowPopup" class="box" >+</box>
         <!---item in tasks[]-->
         <!---li v-for="folder in filteredFolders"> -->        
           <div v-for="f in folders">
@@ -158,10 +152,7 @@
     
     
     <br>    
-
       <div v-if="showTasks">
-        
-
           <!---loopthroughlist-->
           <ul>
             <!---item in tasks[]-->
@@ -208,6 +199,7 @@
     document.getElementById("fcolor2").style.background = "#fde74c";
     document.getElementById("fcolor3").style.background = "#9bc53d";
     </script>
+
   <script src="app.js"></script>
 </body>
 </html>

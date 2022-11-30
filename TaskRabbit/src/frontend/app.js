@@ -12,6 +12,7 @@ const app = Vue.createApp({
     //TODO: seperate functions into dif files
     data() {
         return {
+            showPopup: false,
             showTasks: false,
             showFolders: true,
             title: 'TaskRabbit',
@@ -36,6 +37,8 @@ const app = Vue.createApp({
             newTaskTag: '',
             newTaskDeadline: '',
             tasks: [],
+
+
         }
     },
     computed: {
@@ -64,6 +67,11 @@ const app = Vue.createApp({
             //
             this.lists.splice(0);
             this.tasks.splice(0);
+        },
+        toggleShowPopup() {
+            //change value of whether users can see the popup creation screen
+            console.log("show me my popup");
+            this.showPopup = !this.showPopup;
         },
 
          /*FOLDERS */
@@ -190,7 +198,7 @@ const app = Vue.createApp({
             //don't grab task from backend twice
             if (!this.showLists) {
                 this.getLists(cFolder);
-                this.showLists = !this.showLists;
+                this.showLists = !this.showLists; //change display var
             }
             else {
                 //remove all data from local task array
@@ -203,19 +211,18 @@ const app = Vue.createApp({
             //hide folders to show lists
             this.showFolders = false;
             this.currentFolderId = cFolder.id;
-            console.log("THIS IS THE CURRENT FOLDERID %d", this.currentFolderId);
-            //TODO : set folderID to currentFolderId
 
-            console.log("getting all lists from this user");
+            
             const requestOptions = 
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    folderId: cFolder.id
+                    folderId: this.currentFolderId
                 })
             };
+            console.log("THIS IS THE CURRENT FOLDERID", cFolder, requestOptions);
 
             const response = await fetch("http://127.0.0.1:5000/folder", requestOptions);
             const data = await response.json();
