@@ -72,6 +72,10 @@ const app = Vue.createApp({
             //change value of whether users can see the popup creation screen
             console.log("show me my popup");
             this.showPopup = !this.showPopup;
+
+            //TODO: empty all unsaved inputs
+            this.newFolderName = ''; 
+            this.newFolderColor = ''; 
         },
 
          /*FOLDERS */
@@ -132,13 +136,21 @@ const app = Vue.createApp({
             var tmpFolderStatus;
             var tmpFolderId;
 
-            //TODO: check against empty name and color
-            if (this.newFolderColor == '')
+            //remove extra whitespace tp check filename
+            this.newFolderName = this.newFolderName.trim();
+            if (this.newFolderName == "")
             {
+                alert("Please insert a filename.");
+                return;
+            }
+            //check against empty color
+            if (this.newFolderColor == '')
+            {   //default folder color
                 this.newFolderColor = '1';
             }
-
+            
             console.log("trying to add a folder %s", this.newFolderName);
+            
             //connect to backend 
             const requestOptions = {
                 method: "POST",
@@ -179,9 +191,7 @@ const app = Vue.createApp({
 
             
             //set back to empty text field
-            this.newFolderName = ''; 
-            this.newFolderColor = ''; 
-
+            toggleShowPopup(); //close dialog on success
         }, 
         async deleteFolder(folder) {
             //delete a specific folder 
