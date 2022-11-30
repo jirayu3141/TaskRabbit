@@ -4,16 +4,18 @@ from mysql.connector import MySQLConnection, Error
 from sqlalchemy import create_engine, text
 from error_handling import InvalidAPIUsage
 
-db = mysql.connector.connect(user='admin', password='tAirftr1!!',
-                             host='taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com',
-                             database='main')
+
+db = mysql.connector.connect(user='root', password='tAirftr1!!',
+                             host='34.132.172.198',
+                             database='main')   
 
 
 connection_string = 'Attempting connection to DB'
 
 # connect to db using SQL Alchemy
 engine = create_engine(
-    'mysql+mysqlconnector://admin:tAirftr1!!@taskrabbit.c9f5nnvukk3u.us-east-2.rds.amazonaws.com:3306/main')
+    'mysql+mysqlconnector://root:tAirftr1!!@34.132.172.198:3306/main')
+
 
 
 def get_all_users():
@@ -63,7 +65,13 @@ def get_folders(user_id):
     LEFT JOIN users ON user_folder.user_id = users.user_id
     WHERE users.user_id = %s"""
     cursor.execute(query1, (user_id,))
-    first_name = cursor.fetchone()[0]
+    print(cursor.statement)
+
+
+    first_name = "Peter"
+
+    #print number of rows in the resultset
+    print("Total number of rows in folders is: ", cursor.rowcount) 
     json_data = []
     for (_, folder_id, name, color) in cursor:
         json_data.append(
@@ -125,12 +133,6 @@ def write_list(user_id, folder_id, list_name):
         cursor.execute(sql, val)
         written_list_id = cursor.lastrowid
 
-        # insert to user_folder table
-        print()
-        sql = "INSERT INTO user_folder (user_id, folder_id) VALUES (%s, %s)"
-        val = (user_id, cursor.lastrowid)
-        cursor.execute(sql, val)
-
         db.commit()
         cursor.close()
         # db.close()
@@ -147,7 +149,7 @@ def write_task(list_id, task_name, deadline, tag=0):
         # insert to folders table
         sql = "INSERT INTO tasks (task_id, description, is_completed, deadline, list_id, tag_id) VALUES (%s, %s, %s, %s, %s, %s)"
         # check if tag is null
-        if tag == 0:
+        if tag == 0 or tag == None or tag == '':
             val = (0,  task_name, False, deadline, list_id, 1)
         else:
             val = (0,  task_name, False, deadline, list_id, 2)
@@ -228,9 +230,31 @@ def edit_task(task_id, action):
         print(e)
         raise InvalidAPIUsage(format(e))
 
+def delete_folder(folder_id):
+    try:
+        print(connection_string)
+        # delete folder
+        engine.execute(
+            text("DELETE FROM folders WHERE folder_id = :folder_id"), folder_id=folder_id)
+        print('Folder deleted')
+    except Exception as e:
+        print(e)
+        raise InvalidAPIUsage(format(e))
+
+def delete_list(list_id):
+    try:
+        print(connection_string)
+        # delete list
+        engine.execute(
+            text("DELETE FROM lists WHERE list_id = :list_id"), list_id=list_id)
+        print('List deleted')
+    except Exception as e:
+        print(e)
+        raise InvalidAPIUsage(format(e))
+
 
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
-    print(get_lists(1, 3))
+    delete_list(1)
     db.close()
