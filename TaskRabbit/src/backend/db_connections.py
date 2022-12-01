@@ -121,6 +121,25 @@ def write_folder(user_id, name, color):
         raise InvalidAPIUsage(format(err))
 
 
+def write_tag(description):
+    print('Attempting connection to DB')
+    try:
+        cursor = db.cursor()
+        # insert to folders table
+        #query to check tag_id in the table,dont write
+        sql = "INSERT INTO tags (tag_id, description) VALUES (%s, %s)"
+        val = (0, description)
+        cursor.execute(sql, val)
+        written_tag_id = cursor.lastrowid
+
+        db.commit()
+        cursor.close()
+        # db.close()
+        return (0, written_tag_id)
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
+
 def write_list(user_id, folder_id, list_name):
     print('Attempting connection to DB')
     try:
@@ -140,6 +159,7 @@ def write_list(user_id, folder_id, list_name):
         raise InvalidAPIUsage(format(err))
 
 
+
 def write_task(list_id, task_name, deadline, tag=0):
     print(connection_string)
     try:
@@ -147,10 +167,22 @@ def write_task(list_id, task_name, deadline, tag=0):
         # insert to folders table
         sql = "INSERT INTO tasks (task_id, description, is_completed, deadline, list_id, tag_id) VALUES (%s, %s, %s, %s, %s, %s)"
         # check if tag is null
-        if tag == 0 or tag == None or tag == '':
-            val = (0,  task_name, False, deadline, list_id, 1)
+        tags = get_tags(tag)
+        tagid = tags.get('tagId')
+        if tagid:
+            # write task w existing tag
+            val = (0,  task_name, False, deadline, list_id, tagid)
         else:
-            val = (0,  task_name, False, deadline, list_id, 2)
+            # new tag
+            # id_desc_query = "SELECT * from tags"
+            new_tag_id = write_tag(task_name)[1]
+            val = (0,  task_name, False, deadline, list_id, new_tag_id)
+        # print(checker)
+        
+        # if tag == 0 or tag == None or tag == '':
+        # val = (0,  task_name, False, deadline, list_id, checker)
+        # else:
+        #     val = (0,  task_name, False, deadline, list_id, 2)
         cursor.execute(sql, val)
 
         print(cursor.statement)
@@ -169,6 +201,40 @@ def write_task(list_id, task_name, deadline, tag=0):
         print("Something went wrong: {}".format(err))
         raise InvalidAPIUsage(format(err))
 
+def get_tags(description):
+    print(connection_string)
+    try:
+        cursor = db.cursor()
+
+        query = """
+        SELECT tags.tag_id, tags.description
+        From tags 
+        WHERE description = %s 
+        """
+        cursor.execute(query, (description,))
+
+        result = cursor.fetchall()
+        print(result)
+
+        tag = []
+        for (tag_id, description) in result:
+            tag.append({'tagId': tag_id, 'description': description})
+
+        print(tag)
+        #check if exists
+        tagid = tag[0]
+        db.commit()
+        cursor.close()
+        # db.close()
+        print("query complete")
+        if tagid:
+            return tagid
+        else:
+            return -1
+        
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
 
 def get_tasks(user_id, list_id):
     print(connection_string)
@@ -232,5 +298,5 @@ def edit_task(task_id, action):
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
-    print(get_lists(1, 3))
+    print(write_task(1, "desc","tst",0))
     db.close()

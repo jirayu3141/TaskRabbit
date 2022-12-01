@@ -100,12 +100,12 @@ def create_folder():
     user_id = content['userId']
     color = content['folderColor']
     name = content['folderName']
-
+    folder_name = get_folders(user_id)[1]
     # check user id must be integer
     if not user_id or not isinstance(user_id, int):
         raise InvalidAPIUsage("Invalid userId")
-
-    (status, folder_id) = write_folder(user_id, name, color)
+    if name not in folder_name:
+        (status, folder_id) = write_folder(user_id, name, color)
     return jsonify({
         'status': status,
         'folder_id': folder_id,
@@ -129,6 +129,22 @@ def create_list():
         'list_id': list_id,
     })
 
+@ app.route("/createTag", methods=['POST'])
+def create_tag():
+    content = request.json
+    list_id = content['listId']
+    description = content['description']
+    
+    # check user id must be integer
+    if not tag_id or not isinstance(tag_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    (status, tag_id) = write_tag(list_id,description)
+    return jsonify({
+        'status': status,
+        'tag_id': tag_id,
+    })
+
 @ app.route("/editTask", methods=['POST'])
 def edit_task_url():
     content = request.json
@@ -144,7 +160,6 @@ def edit_task_url():
     return jsonify({
         'status': 0
     })
-
 
 if __name__ == "__main__":
     app.run(debug=True)
