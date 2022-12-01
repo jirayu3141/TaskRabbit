@@ -160,23 +160,25 @@ def write_list(user_id, folder_id, list_name):
 
 
 
-def write_task(list_id, task_name, deadline, tag=0):
+def write_task(list_id, task_name, deadline, tag=""):
     print(connection_string)
     try:
         cursor = db.cursor()
         # insert to folders table
         sql = "INSERT INTO tasks (task_id, description, is_completed, deadline, list_id, tag_id) VALUES (%s, %s, %s, %s, %s, %s)"
         # check if tag is null
-        tags = get_tags(tag)
-        tagid = tags.get('tagId')
-        if tagid:
-            # write task w existing tag
-            val = (0,  task_name, False, deadline, list_id, tagid)
-        else:
-            # new tag
-            # id_desc_query = "SELECT * from tags"
-            new_tag_id = write_tag(task_name)[1]
+        tagid = get_tags(tag)
+        print(tagid)
+        # tagid = tags.get('tagId')
+        if tagid == -1:
+            new_tag_id = write_tag(tag)[1]
             val = (0,  task_name, False, deadline, list_id, new_tag_id)
+        else:
+            
+            val = (0,  task_name, False, deadline, list_id, tagid)
+            print("executed")
+            # new_tag_id = write_tag(task_name)[1]
+            # val = (0,  task_name, False, deadline, list_id, new_tag_id)
         # print(checker)
         
         # if tag == 0 or tag == None or tag == '':
@@ -222,7 +224,10 @@ def get_tags(description):
 
         print(tag)
         #check if exists
-        tagid = tag[0]
+        tagid = -1
+        if tag:
+            tagid = tag[0].get('tagId')
+        
         db.commit()
         cursor.close()
         # db.close()
@@ -294,9 +299,11 @@ def edit_task(task_id, action):
         print(e)
         raise InvalidAPIUsage(format(e))
 
+# def show_tag_task(tag):
+
 
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
-    print(write_task(1, "desc","tst",0))
+    print(write_task(12, "taskname","testing"))
     db.close()
