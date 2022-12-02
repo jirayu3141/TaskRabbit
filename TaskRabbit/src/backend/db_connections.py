@@ -253,8 +253,28 @@ def delete_list(list_id):
         raise InvalidAPIUsage(format(e))
 
 
+def login_user(email, password):
+    print(connection_string)
+    try:
+        cursor = db.cursor()
+        query = "SELECT user_id, first_name, last_name FROM users WHERE email = %s"
+        cursor.execute(query, (email,))
+        result = cursor.fetchone()
+        print(result)
+        if result == None:
+            return ('User not found', -1, "", "")
+        else:
+            user_id = result[0]
+            first_name = result[1]
+            last_name = result[2]
+            return ("Success", user_id, first_name, last_name)
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
+
+
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
-    delete_list(1)
+    print(login_user("test@", "test"))
     db.close()
