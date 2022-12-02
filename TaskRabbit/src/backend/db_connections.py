@@ -284,7 +284,7 @@ def get_all_tag(user_id):
 
         tag = []
         for (tag_id, description) in result:
-            tag.append(description)
+            tag.append({'tagId': tag_id, 'tagName': description})
 
         print(tag)
 
