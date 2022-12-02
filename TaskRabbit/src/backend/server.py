@@ -206,6 +206,23 @@ def get_all_tag_url():
         'tags': result,
     })
 
+# get task by tag
+@ app.route("/getTaskByTag", methods=['POST'])
+def get_task_by_tag_url():
+    content = request.json
+    user_id = content['userId']
+    tag = content['tag']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    result = get_task_by_tag(user_id, tag)
+    return jsonify({
+        'status': 0,
+        'tasks': result,
+    })
+
 
 if __name__ == "__main__":
     app.run(debug=True)

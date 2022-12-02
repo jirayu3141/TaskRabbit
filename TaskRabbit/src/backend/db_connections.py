@@ -298,9 +298,43 @@ def get_all_tag(user_id):
         raise InvalidAPIUsage(format(err))
 
 
+def get_task_by_tag(user_id, tag_id):
+    print(connection_string)
+    try:
+        cursor = db.cursor()
+
+        query = """
+        SELECT task_id, tasks.description, is_completed, deadline, tags.description
+        From tasks 
+        LEFT JOIN tags ON tasks.tag_id = tags.tag_id
+        WHERE tags.tag_id = %s 
+        """
+        cursor.execute(query, (tag_id,))
+
+        result = cursor.fetchall()
+        print(result)
+
+        task = []
+        for (task_id, description, is_completed, deadline, tag) in result:
+            task.append({'taskId': task_id, 'taskName': description, 'taskIsCompleted': is_completed,
+                        'taskDeadline': deadline, 'taskTag': tag})
+
+        print(task)
+
+        db.commit()
+        cursor.close()
+        # db.close()
+        print("query complete")
+        return task
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
+
+
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
     # print(login_user("test@", "test"))
-    print(get_all_tag(1))
+    # print(get_all_tag(1))
+    print(get_task_by_tag(1, 5))
     db.close()
