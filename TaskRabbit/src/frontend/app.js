@@ -1,3 +1,5 @@
+
+
 /** '  python3 server.py  ' in terminal will start server  */
 //pip install mysql-connector-python
 //pip install -U flask-cors
@@ -38,6 +40,7 @@ const app = Vue.createApp({
             newTaskTag: '',
             newTaskDeadline: '',
             tasks: [],
+            tags: [],
 
 
         }
@@ -124,6 +127,9 @@ const app = Vue.createApp({
                 //push tasks to array
                 this.folders.push({id: tmpFolderId, name: tmpFolderName, color: tmpFolderColor});
             }
+
+            //on success get tags
+            this.getTags();
 
         },
         displayFolderColor(folderC, colorNum) {
@@ -244,8 +250,6 @@ const app = Vue.createApp({
             }
 
             console.log("after delete");
-
-            //TODO: backend delete from db
         },
 
          /*LISTS */
@@ -403,6 +407,19 @@ const app = Vue.createApp({
             
             }
 
+            //check if the tag added was a new tag
+            var exists = this.tags.some(function(tags) 
+            {
+                return tags.name === this.newTaskTag
+            });
+              
+              if (!exists) {
+                this.tags.push({name: this.newTaskTag});
+            }
+
+            //compare against local tags array
+            //if new tag, push that new tag to local
+
             //set back to empty text field
             this.newTaskName = ''; 
             this.newTaskTag = ''; 
@@ -517,12 +534,38 @@ const app = Vue.createApp({
             }
 
           }, 
+          async getTags() {
+            const requestOptions = 
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 1, //todo: user auth
+                })
+            };
+    
+            const response = await fetch("http://127.0.0.1:5000/getAllTag", requestOptions);
+            const data = await response.json();
+            this.postId = data.id;
+
+            console.log("getting all tags from this user", data.tags); //data object from 
+    
+            for (const e of data.tags) 
+            { //iterate over all tasks and push to 'tags' array
+                tmpTagId = e.tagId;
+                tmpTagName = e.tagName;
+                //push tags to array
+                this.tags.push({name: tmpTagName});
+            }        
+        },
     
     }, 
+   
     mounted() {
         //immediatly get the folders from home
         this.getFolders();
-        //this.getLists();
+        //this.getTags();
+        
       },
 
 
