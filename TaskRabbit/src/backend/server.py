@@ -175,6 +175,22 @@ def delete_task_url():
         'status': 0
     })
 
+# login function
+@ app.route("/login", methods=['POST'])
+def login_url():
+    content = request.json
+    email = content['email']
+    password = content['password']
+
+    (status, user_id, first_name, last_name) = login_user(email, password)
+    return jsonify({
+        'status': status,
+        'userId': user_id,
+        'firstName': first_name,
+        'lastName': last_name,
+    })
+
+
 
 
 if __name__ == "__main__":
