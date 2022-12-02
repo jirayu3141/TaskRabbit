@@ -161,5 +161,99 @@ def edit_task_url():
         'status': 0
     })
 
+@ app.route("/deleteList", methods=['POST'])
+def delete_list_url():
+    content = request.json
+    user_id = content['userId']
+    list_id = content['listId']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    delete_list(list_id)
+    return jsonify({
+        'status': 0
+    })
+
+@ app.route("/deleteTask", methods=['POST'])
+def delete_task_url():
+    content = request.json
+    user_id = content['userId']
+    task_id = content['taskId']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    delete_task(task_id)
+    return jsonify({
+        'status': 0
+    })
+
+# login function
+@ app.route("/login", methods=['POST'])
+def login_url():
+    content = request.json
+    email = content['email']
+    password = content['password']
+
+    (status, user_id, first_name, last_name) = login_user(email, password)
+    return jsonify({
+        'status': status,
+        'userId': user_id,
+        'firstName': first_name,
+        'lastName': last_name,
+    })
+
+# get all function
+@ app.route("/getAllTag", methods=['POST'])
+def get_all_tag_url():
+    content = request.json
+    user_id = content['userId']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    result = get_all_tag(user_id)
+    return jsonify({
+        'status': 0,
+        'tags': result,
+    })
+
+# get task by tag
+@ app.route("/getTaskByTag", methods=['POST'])
+def get_task_by_tag_url():
+    content = request.json
+    user_id = content['userId']
+    tag = content['tag']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    result = get_task_by_tag(user_id, tag)
+    return jsonify({
+        'status': 0,
+        'tasks': result,
+    })
+
+# delete folder
+@ app.route("/deleteFolder", methods=['POST'])
+def delete_folder_url():
+    content = request.json
+    user_id = content['userId']
+    folder_id = content['folderId']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    delete_folder(user_id, folder_id)
+    return jsonify({
+        'status': 0
+    })
+
 if __name__ == "__main__":
     app.run(debug=True)

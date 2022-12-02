@@ -12,12 +12,14 @@ const app = Vue.createApp({
     //TODO: seperate functions into dif files
     data() {
         return {
+            showPopup: false,
             showTasks: false,
             showFolders: true,
             title: 'TaskRabbit',
 
             /*HOME */
             currentFolderId: '',
+            currentFolderName: '',
             newFolderName: '',
             newFolderColor: '',
             folders: [],
@@ -36,6 +38,8 @@ const app = Vue.createApp({
             newTaskTag: '',
             newTaskDeadline: '',
             tasks: [],
+
+
         }
     },
     computed: {
@@ -65,9 +69,26 @@ const app = Vue.createApp({
             this.lists.splice(0);
             this.tasks.splice(0);
         },
+        toggleShowPopup(scope) {
+            //change value of whether users can see the popup creation screen
+            console.log("show me my popup");
+            this.showPopup = !this.showPopup;
+
+
+            //TODO: empty all unsaved inputs depending on what scope
+            if (scope == 0)
+            { //clear folder creation prompt
+                this.newFolderName = ''; 
+                this.newFolderColor = ''; 
+            }
+            else if (scope == 1)
+            { //clear list creation prompt
+                this.newListName = '';
+            }
+        },
 
          /*FOLDERS */
-        toggleShowFolders() {
+        async toggleShowFolders() {
             console.log("show me my folders");
            
             if (!this.showFolders) {
@@ -105,11 +126,40 @@ const app = Vue.createApp({
             }
 
         },
+        displayFolderColor(folderC, colorNum) {
+            //returns whether that color matches with the folder's color
+            //console.log("COLOR CHECK!!");
+            var fcolor = parseInt(folderC.color); //this folder's color           
+
+            if (fcolor == colorNum)
+            {
+                //console.log("true");
+                return true;
+            }
+            
+            //console.log("false");
+            return false;
+
+        },
         async addFolder() {
             var tmpFolderStatus;
             var tmpFolderId;
 
+            //remove extra whitespace tp check filename
+            this.newFolderName = this.newFolderName.trim();
+            if (this.newFolderName == "")
+            {
+                alert("Please insert a name for your folder.");
+                return;
+            }
+            //check against empty color
+            if (this.newFolderColor == '')
+            {   //default folder color
+                this.newFolderColor = '1';
+            }
+
             console.log("trying to add a folder %s", this.newFolderName);
+            
             //connect to backend 
             const requestOptions = {
                 method: "POST",
@@ -145,19 +195,55 @@ const app = Vue.createApp({
             { //success 0
                 console.log("folder '%s' (%d) is created\n", this.newFolderName, tmpFolderId);
                 this.folders.push({id: tmpFolderId, name: this.newFolderName, color: this.newFolderColor});
-                
+                //on success set back to empty text field
+                this.newFolderColor = '';
+                this.newFolderName = '';
+                this.showPopup = false;
             }
 
-            
-            //set back to empty text field
-            this.newFolderName = ''; 
-            this.newFolderColor = ''; 
-
         }, 
-        async deleteFolder(folder) {
+        async deleteFolder(f,index) {
+            console.log("before delete");
             //delete a specific folder 
             //TODO : uer with right click can delete with menue
-            this.folders = this.folders.filter((f) => f !== folder);
+            //delete a specific task from the list
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: 1, //todo: user auth
+                    folderId: this.folderId,
+                    action: 'delete'
+                })
+            };
+            if(this.folders[index] === f) {
+                // The template passes index as the second parameter to avoid indexOf,
+                // it will be better for the performance especially for one large array
+                // (because indexOf actually loop the array to do the match)
+                  this.folders.splice(index, 1)
+                } else {
+                  let found = this.folders.indexOf(item)
+                  this.folders.splice(found, 1)
+                }
+            console.log("should delete");  
+            const response = await fetch("http://127.0.0.1:5000/deleteFolder", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
+            console.log("delete folder status", data);
+            tmpDeleteStatus = data.status;
+
+            //check delete status
+            if (tmpDeleteStatus == 1)
+            { //fail
+                alert("error deleting folder!");
+            }
+            
+            { //success -> delete folder from local
+                console.log("deleting folder: %s (%d)", folder.name, folder.id);
+                this.folder = this.folder.filter((f) => f!== folder);
+            }
+
+            console.log("after delete");
 
             //TODO: backend delete from db
         },
@@ -169,7 +255,7 @@ const app = Vue.createApp({
             //don't grab task from backend twice
             if (!this.showLists) {
                 this.getLists(cFolder);
-                this.showLists = !this.showLists;
+                this.showLists = !this.showLists; //change display var
             }
             else {
                 //remove all data from local task array
@@ -182,19 +268,18 @@ const app = Vue.createApp({
             //hide folders to show lists
             this.showFolders = false;
             this.currentFolderId = cFolder.id;
-            console.log("THIS IS THE CURRENT FOLDERID %d", this.currentFolderId);
-            //TODO : set folderID to currentFolderId
+            this.currentFolderName = cFolder.name;
 
-            console.log("getting all lists from this user");
             const requestOptions = 
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    folderId: cFolder.id
+                    folderId: this.currentFolderId
                 })
             };
+            console.log("THIS IS THE CURRENT FOLDERID", cFolder, requestOptions);
 
             const response = await fetch("http://127.0.0.1:5000/folder", requestOptions);
             const data = await response.json();
@@ -215,6 +300,14 @@ const app = Vue.createApp({
         async addList() {
             //allows user to add another task to their lisr            
     
+            //remove extra whitespace tp check filename
+            this.newListName = this.newListName.trim();
+            if (this.newListName == "")
+            {
+                alert("Please insert a name for your list.");
+                return;
+            }
+
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -241,13 +334,12 @@ const app = Vue.createApp({
             { //success 0
                 console.log("folder '%s' (%d) is created\n", this.newFolderName, tmpFolderId);
                 this.lists.push({id: tmpListId, name: this.newListName});
-                
             }
-            //set back to empty text field
-            this.newListName = '';
+            
             console.log("list '%s' is created\n", this.newListName);
-
-
+            //on success reset var
+            this.newListName = '';
+            this.showPopup = false;
         }, 
 
          async deleteList(list) {

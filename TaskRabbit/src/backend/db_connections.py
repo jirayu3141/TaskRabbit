@@ -4,6 +4,7 @@ from mysql.connector import MySQLConnection, Error
 from sqlalchemy import create_engine, text
 from error_handling import InvalidAPIUsage
 
+
 db = mysql.connector.connect(user='root', password='tAirftr1!!',
                              host='34.132.172.198',
                              database='main')
@@ -12,8 +13,9 @@ db = mysql.connector.connect(user='root', password='tAirftr1!!',
 connection_string = 'Attempting connection to DB'
 
 # connect to db using SQL Alchemy
-# engine = create_engine(
-#     'mysql+mysqlconnector://root:34.132.172.198:3306/main')
+engine = create_engine(
+    'mysql+mysqlconnector://root:tAirftr1!!@34.132.172.198:3306/main')
+
 
 
 def get_all_users():
@@ -299,11 +301,138 @@ def edit_task(task_id, action):
         print(e)
         raise InvalidAPIUsage(format(e))
 
-# def show_tag_task(tag):
+def delete_folder(folder_id):
+    try:
+        print(connection_string)
+        # delete folder
+        engine.execute(
+            text("DELETE FROM folders WHERE folder_id = :folder_id"), folder_id=folder_id)
+        print('Folder deleted')
+    except Exception as e:
+        print(e)
+        raise InvalidAPIUsage(format(e))
+
+def delete_list(list_id):
+    try:
+        print(connection_string)
+        # delete list
+        engine.execute(
+            text("DELETE FROM lists WHERE list_id = :list_id"), list_id=list_id)
+        print('List deleted')
+    except Exception as e:
+        print(e)
+        raise InvalidAPIUsage(format(e))
+
+
+def login_user(email, password):
+    print(connection_string)
+    try:
+        cursor = db.cursor()
+        query = "SELECT user_id, first_name, last_name FROM users WHERE email = %s"
+        cursor.execute(query, (email,))
+        result = cursor.fetchone()
+        print(result)
+        if result == None:
+            return ('User not found', -1, "", "")
+        else:
+            user_id = result[0]
+            first_name = result[1]
+            last_name = result[2]
+            return ("Success", user_id, first_name, last_name)
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
+
+
+def get_all_tag(user_id):
+    print(connection_string)
+    try:
+        cursor = db.cursor()
+        query = "SELECT tag_id, description FROM tags"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        print(result)
+
+        tag = []
+        for (tag_id, description) in result:
+            tag.append({'tagId': tag_id, 'tagName': description})
+
+        print(tag)
+
+        db.commit()
+        cursor.close()
+        # db.close()
+        print("query complete")
+        return tag
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
+
+
+def get_task_by_tag(user_id, tag_id):
+    print(connection_string)
+    try:
+        cursor = db.cursor()
+
+        query = """
+        SELECT task_id, tasks.description, is_completed, deadline, tags.description
+        From tasks 
+        LEFT JOIN tags ON tasks.tag_id = tags.tag_id
+        WHERE tags.tag_id = %s 
+        """
+        cursor.execute(query, (tag_id,))
+
+        result = cursor.fetchall()
+        print(result)
+
+        task = []
+        for (task_id, description, is_completed, deadline, tag) in result:
+            task.append({'taskId': task_id, 'taskName': description, 'taskIsCompleted': is_completed,
+                        'taskDeadline': deadline, 'taskTag': tag})
+
+        print(task)
+
+        db.commit()
+        cursor.close()
+        # db.close()
+        print("query complete")
+        return task
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
+
+
+# delete folder
+def delete_folder(folder_id):
+    try:
+        print(connection_string)
+        # delete folder
+        engine.execute(
+            text("DELETE FROM folders WHERE folder_id = :folder_id"), folder_id=folder_id)
+        print('Folder deleted')
+    except Exception as e:
+        print(e)
+        raise InvalidAPIUsage(format(e))
+
+def delete_folder(user_id, folder_id):
+    cursor = db.cursor()
+    try:
+        cursor = db.cursor()
+        args = [user_id, folder_id]
+        cursor.callproc('delete_folder', args)
+        db.commit()
+        cursor.close()
+    except Error as e:
+        print(e)
+    cursor.close()
+
+    return 0
 
 
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
-    print(write_task(12, "taskname","testing"))
+    # print(login_user("test@", "test"))
+    # print(get_all_tag(1))
+    print(delete_folder(1,69))
     db.close()
