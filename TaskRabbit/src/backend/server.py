@@ -145,6 +145,37 @@ def edit_task_url():
         'status': 0
     })
 
+@ app.route("/deleteList", methods=['POST'])
+def delete_list_url():
+    content = request.json
+    user_id = content['userId']
+    list_id = content['listId']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    delete_list(list_id)
+    return jsonify({
+        'status': 0
+    })
+
+@ app.route("/deleteTask", methods=['POST'])
+def delete_task_url():
+    content = request.json
+    user_id = content['userId']
+    task_id = content['taskId']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    delete_task(task_id)
+    return jsonify({
+        'status': 0
+    })
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
