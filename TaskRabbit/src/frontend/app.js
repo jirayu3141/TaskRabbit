@@ -372,8 +372,14 @@ const app = Vue.createApp({
             var tmpTaskId;
             var tmpTaskStatus;
             
-            //call backend to send in new task to database
-            // PUT request using fetch with async/await
+            //remove extra whitespace tp check for empty task
+            this.newTaskName = this.newTaskName.trim();
+            if (this.newTaskName == "")
+            {
+                //alert("Please insert a name for your task.");
+                return;
+            }
+
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
