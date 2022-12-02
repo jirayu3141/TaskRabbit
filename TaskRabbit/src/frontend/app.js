@@ -202,10 +202,48 @@ const app = Vue.createApp({
             }
 
         }, 
-        async deleteFolder(folder) {
+        async deleteFolder(f,index) {
+            console.log("before delete");
             //delete a specific folder 
             //TODO : uer with right click can delete with menue
-            this.folders = this.folders.filter((f) => f !== folder);
+            //delete a specific task from the list
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: 1, //todo: user auth
+                    folderId: this.folderId,
+                    action: 'delete'
+                })
+            };
+            if(this.folders[index] === f) {
+                // The template passes index as the second parameter to avoid indexOf,
+                // it will be better for the performance especially for one large array
+                // (because indexOf actually loop the array to do the match)
+                  this.folders.splice(index, 1)
+                } else {
+                  let found = this.folders.indexOf(item)
+                  this.folders.splice(found, 1)
+                }
+            console.log("should delete");  
+            const response = await fetch("http://127.0.0.1:5000/deleteFolder", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
+            console.log("delete folder status", data);
+            tmpDeleteStatus = data.status;
+
+            //check delete status
+            if (tmpDeleteStatus == 1)
+            { //fail
+                alert("error deleting folder!");
+            }
+            
+            { //success -> delete folder from local
+                console.log("deleting folder: %s (%d)", folder.name, folder.id);
+                this.folder = this.folder.filter((f) => f!== folder);
+            }
+
+            console.log("after delete");
 
             //TODO: backend delete from db
         },
