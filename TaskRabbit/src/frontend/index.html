@@ -127,10 +127,10 @@
       
       <div class="array">
         <!---item in tasks[]-->
-          <div v-for="f in folders">
+          <div v-for="(f,index) in folders">
             <box class="box" onclick="location.href = 'folders.html'"> folder</box>
             <div>{{ f.name }}</div>  
-            <button @click="deleteFolder(f)">X</button>
+            <button @click="deleteFolder(f, index)">X</button>
           <!---color css??-->
           <!--color, show lists on click (open a new page)-->
           </div>
