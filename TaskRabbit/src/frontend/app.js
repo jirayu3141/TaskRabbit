@@ -203,9 +203,37 @@ const app = Vue.createApp({
 
         }, 
         async deleteFolder(folder) {
+            console.log("before delte");
             //delete a specific folder 
             //TODO : uer with right click can delete with menue
-            this.folders = this.folders.filter((f) => f !== folder);
+            //delete a specific task from the list
+            const requestOptions = {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: 1, //todo: user auth
+                    folderId: this.folderId,
+                    action: 'delete'
+                })
+            };
+            const response = await fetch("http://127.0.0.1:5000/deleteFolder", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
+            console.log("delete folder status", data);
+            tmpDeleteStatus = data.status;
+
+            //check delete status
+            if (tmpDeleteStatus == 1)
+            { //fail
+                alert("error deleting folder!");
+            }
+            else
+            { //success -> delete folder from local
+                console.log("deleting folder: %s (%d)", folder.name, folder.id);
+                this.folder = this.folder.filter((f) => f!== folder);
+            }
+
+            console.log("after delete");
 
             //TODO: backend delete from db
         },
