@@ -190,7 +190,21 @@ def login_url():
         'lastName': last_name,
     })
 
+# get all function
+@ app.route("/getAllTag", methods=['POST'])
+def get_all_tag_url():
+    content = request.json
+    user_id = content['userId']
 
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    result = get_all_tag(user_id)
+    return jsonify({
+        'status': 0,
+        'tags': result,
+    })
 
 
 if __name__ == "__main__":

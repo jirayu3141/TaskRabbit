@@ -273,8 +273,34 @@ def login_user(email, password):
         raise InvalidAPIUsage(format(err))
 
 
+def get_all_tag(user_id):
+    print(connection_string)
+    try:
+        cursor = db.cursor()
+        query = "SELECT tag_id, description FROM tags"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        print(result)
+
+        tag = []
+        for (tag_id, description) in result:
+            tag.append(description)
+
+        print(tag)
+
+        db.commit()
+        cursor.close()
+        # db.close()
+        print("query complete")
+        return tag
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        raise InvalidAPIUsage(format(err))
+
+
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
-    print(login_user("test@", "test"))
+    # print(login_user("test@", "test"))
+    print(get_all_tag(1))
     db.close()
