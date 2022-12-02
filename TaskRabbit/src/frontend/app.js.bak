@@ -203,17 +203,18 @@ const app = Vue.createApp({
 
         }, 
         async deleteFolder(folder) {
-            console.log("before delete", folder);
+            console.log("before delte");
             //delete a specific folder 
             //TODO : uer with right click can delete with menue
             //delete a specific task from the list
             const requestOptions = {
-                method: "DELETE",
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
+                body: JSON.stringify({ 
                     userId: 1, //todo: user auth
-                    folderId: this.folderId,
+                    folderId: folder.id,
                     action: 'delete'
+                    
                 })
             };
             const response = await fetch("http://127.0.0.1:5000/deleteFolder", requestOptions);
@@ -227,7 +228,7 @@ const app = Vue.createApp({
             { //fail
                 alert("error deleting folder!");
             }
-            
+            else 
             { //success -> delete folder from local
                 console.log("deleting folder: %s (%d)", folder.name, folder.id);
                 this.folder = this.folder.filter((f) => f!== folder);
