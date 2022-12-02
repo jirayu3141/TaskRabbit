@@ -331,10 +331,37 @@ def get_task_by_tag(user_id, tag_id):
         raise InvalidAPIUsage(format(err))
 
 
+# delete folder
+def delete_folder(folder_id):
+    try:
+        print(connection_string)
+        # delete folder
+        engine.execute(
+            text("DELETE FROM folders WHERE folder_id = :folder_id"), folder_id=folder_id)
+        print('Folder deleted')
+    except Exception as e:
+        print(e)
+        raise InvalidAPIUsage(format(e))
+
+def delete_folder(user_id, folder_id):
+    cursor = db.cursor()
+    try:
+        cursor = db.cursor()
+        args = [user_id, folder_id]
+        cursor.callproc('delete_folder', args)
+        db.commit()
+        cursor.close()
+    except Error as e:
+        print(e)
+    cursor.close()
+
+    return 0
+
+
 if __name__ == "__main__":
     # edit_task(35, 'uncomplete')
     # # write_task(1, "test", "test", 0)
     # print(login_user("test@", "test"))
     # print(get_all_tag(1))
-    print(get_task_by_tag(1, 5))
+    print(delete_folder(1,69))
     db.close()

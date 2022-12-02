@@ -223,6 +223,21 @@ def get_task_by_tag_url():
         'tasks': result,
     })
 
+# delete folder
+@ app.route("/deleteFolder", methods=['POST'])
+def delete_folder_url():
+    content = request.json
+    user_id = content['userId']
+    folder_id = content['folderId']
+
+    # check user id must be integer
+    if not user_id or not isinstance(user_id, int):
+        raise InvalidAPIUsage("Invalid userId")
+
+    delete_folder(user_id, folder_id)
+    return jsonify({
+        'status': 0
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
