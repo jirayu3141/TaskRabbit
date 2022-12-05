@@ -1,5 +1,4 @@
 
-
 /** '  python3 server.py  ' in terminal will start server  */
 //pip install mysql-connector-python
 //pip install -U flask-cors
