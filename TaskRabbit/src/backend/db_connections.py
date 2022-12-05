@@ -14,7 +14,11 @@ connection_string = 'Attempting connection to DB'
 
 # connect to db using SQL Alchemy
 engine = create_engine(
-    'mysql+mysqlconnector://root:tAirftr1!!@34.132.172.198:3306/main')
+    'mysql+mysqlconnector://root:tAirftr1!!@34.132.172.198:3306/main'
+    # ,execution_options={
+    #     "isolation_level": "REPEATABLE READ"
+    # }
+    )
 
 
 
@@ -401,6 +405,27 @@ def get_task_by_tag(user_id, tag_id):
         print("Something went wrong: {}".format(err))
         raise InvalidAPIUsage(format(err))
 
+def get_users_of_folder(folder_id): 
+    print(connection_string)
+    try:
+        cursor = db.cursor()
+        
+        args = [folder_id]
+        cursor.callproc('user_of_folder', args)
+        users = []
+        store = []
+        for res in cursor.stored_results():
+            store = res.fetchall()
+        for (user_id,first_name) in store:
+            dict = {"userId":user_id,
+            "firstName":first_name}
+            users.append(dict)
+        db.commit()
+        cursor.close()
+    except Error as e:
+        print(e)
+    cursor.close()
+    return users
 
 # delete folder
 def delete_folder(folder_id):
@@ -430,9 +455,5 @@ def delete_folder(user_id, folder_id):
 
 
 if __name__ == "__main__":
-    # edit_task(35, 'uncomplete')
-    # # write_task(1, "test", "test", 0)
-    # print(login_user("test@", "test"))
-    # print(get_all_tag(1))
-    print(delete_folder(1,69))
+    print(get_users_of_folder(85))
     db.close()
