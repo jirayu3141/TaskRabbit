@@ -212,8 +212,8 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     userId: 1, //todo: user auth
-                    folderId: this.folderId,
-                    action: 'delete'
+                    folderId: f.id,
+                    
                 })
             };
             if(this.folders[index] === f) {
@@ -239,8 +239,8 @@ const app = Vue.createApp({
             }
             
             { //success -> delete folder from local
-                console.log("deleting folder: %s (%d)", folder.name, folder.id);
-                this.folder = this.folder.filter((f) => f!== folder);
+                console.log("deleting folder");
+                //this.folder = this.folder.filter((f) => f!== folder);
             }
 
             console.log("after delete");
@@ -342,9 +342,48 @@ const app = Vue.createApp({
             this.showPopup = false;
         }, 
 
-         async deleteList(list) {
-            //delete a specific list 
-            this.lists = this.lists.filter((l) => l !== list);
+         async deleteList(l,index) {
+            console.log("before delete lists");
+            //delete a specific folder 
+            //TODO : uer with right click can delete with menue
+            //delete a specific task from the list
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: 1, //todo: user auth
+                    listId: this.listId,
+                    action: 'delete'
+                })
+            };
+            if(this.lists[index] === l) {
+                // The template passes index as the second parameter to avoid indexOf,
+                // it will be better for the performance especially for one large array
+                // (because indexOf actually loop the array to do the match)
+                  this.lists.splice(index, 1)
+                } else {
+                  let found = this.lists.indexOf(item)
+                  this.lists.splice(found, 1)
+                }
+            console.log("should delete list");  
+            const response = await fetch("http://127.0.0.1:5000/deleteList", requestOptions);
+            const data = await response.json();
+            this.updatedAt = data.updatedAt;
+            console.log("delete list status", data);
+            tmpDeleteStatus = data.status;
+
+            //check delete status
+            if (tmpDeleteStatus == 1)
+            { //fail
+                alert("error deleting list!");
+            }
+            
+            { //success -> delete folder from local
+                console.log("deleting list: %s (%d)", list.name, list.id);
+                this.list = this.list.filter((l) => l!== list);
+            }
+
+            console.log("after delete list");
 
             //TODO: backend delete from db
         },

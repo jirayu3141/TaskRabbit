@@ -62,6 +62,23 @@
       height: 100%;
     }
 
+    .array {
+      background-color: Transparent;
+      background-repeat:no-repeat;
+      border: none;
+      cursor:pointer;
+      overflow: hidden;
+      outline:none;
+}
+    .array {
+      background-color: Transparent;
+      background-repeat:no-repeat;
+      border: none;
+      cursor:pointer;
+      overflow: hidden;
+      outline:none;
+}
+
     /* Add styles to the popup container */
     .popup-container {
       width: 400px;
@@ -221,6 +238,9 @@
       <!--show all lists in this folder----->        
       <div class="grid-container" v-for="l in lists">
         <button @click="toggleShowTasks(l)">{{  l.name }}</button>
+        <button @click="deleteList(l,index)">
+          <img src="../assets/trash.png"width = "15" height = "15"/>
+          </button>
       </div>
     </div>
     
