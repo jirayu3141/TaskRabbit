@@ -123,6 +123,12 @@
 </head>
 <body>
   <div id="app">
+
+    <button id="logout" onclick="location.href = 'login.html'">
+      <img src="../assets/logout.png" width = "20" height = "20"/>
+    </button>
+
+    
     <h1 @click="goHome" class="pad"> {{ title }}</h1>
     <br>
     <!--/HOME-->
@@ -270,6 +276,7 @@
     
     <!--/LIST-->
        <div v-if="showTasks">
+        <h4 style="text-align: center;">Currently in list "{{currentListName}}"</h4>
           <!---show all tasks in this list-->
           <ul>
             <!---item in tasks[]-->
