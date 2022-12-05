@@ -222,7 +222,7 @@ const app = Vue.createApp({
                     
                 })
             };
-            if(this.folders[index] === f) {
+            if(this.folders[index] == f) {
                 // The template passes index as the second parameter to avoid indexOf,
                 // it will be better for the performance especially for one large array
                 // (because indexOf actually loop the array to do the match)
@@ -347,7 +347,7 @@ const app = Vue.createApp({
         }, 
 
          async deleteList(l,index) {
-            console.log("before delete lists");
+            console.log("before delete list");
             //delete a specific folder 
             //TODO : uer with right click can delete with menue
             //delete a specific task from the list
@@ -356,11 +356,11 @@ const app = Vue.createApp({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     userId: 1, //todo: user auth
-                    listId: this.listId,
-                    action: 'delete'
+                    listId: l.id,
+                    
                 })
             };
-            if(this.lists[index] === l) {
+            if(this.lists[index] == l) {
                 // The template passes index as the second parameter to avoid indexOf,
                 // it will be better for the performance especially for one large array
                 // (because indexOf actually loop the array to do the match)
@@ -383,16 +383,13 @@ const app = Vue.createApp({
             }
             
             { //success -> delete folder from local
-                console.log("deleting list: %s (%d)", list.name, list.id);
-                this.list = this.list.filter((l) => l!== list);
+                console.log("deleting list");
+                //this.folder = this.folder.filter((f) => f!== folder);
             }
 
             console.log("after delete list");
 
-            //TODO: backend delete from db
-        },
-
-        /*TASKS */
+        }, 
         toggleShowTasks(cList) {
             console.log("show me my tasks");
             //don't grab task from backend twice
@@ -404,8 +401,7 @@ const app = Vue.createApp({
                 this.tasks.splice(0);
             }
             this.showTasks = !this.showTasks;
-
-        }, 
+        },
         async addTask() {
             //allows user to add another task to their list
             var tmpTaskId;
