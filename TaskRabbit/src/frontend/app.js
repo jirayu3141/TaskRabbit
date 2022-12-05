@@ -19,6 +19,7 @@ const app = Vue.createApp({
             title: 'TaskRabbit',
 
             /*HOME */
+            lookupTag: '',
             currentFolderId: '',
             currentFolderName: '',
             newFolderName: '',
@@ -40,6 +41,7 @@ const app = Vue.createApp({
             newTaskDeadline: '',
             tasks: [],
             tags: [],
+            tasksByTag: [],
 
 
         }
@@ -447,18 +449,9 @@ const app = Vue.createApp({
             
             }
 
-            //check if the tag added was a new tag
-            var exists = this.tags.some(function(tags) 
-            {
-                return tags.name === this.newTaskTag
-            });
-              
-              if (!exists) {
-                this.tags.push({name: this.newTaskTag});
-            }
-
-            //compare against local tags array
-            //if new tag, push that new tag to local
+            //reset tags
+            this.tags.splice(0);
+            this.getTags();
 
             //set back to empty text field
             this.newTaskName = ''; 
@@ -597,6 +590,41 @@ const app = Vue.createApp({
                 //push tags to array
                 this.tags.push({name: tmpTagName});
             }        
+        },
+        async getTasksByTag() {
+            console.log("LOOKUPTAG:", this.lookupTag);
+            this.tasksByTag.splice(0); //clear arrayafter every query
+ 
+            const requestOptions = 
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userId: 1, //todo: user auth
+                    tag: this.lookupTag
+                })
+            };
+
+            const response = await fetch("http://127.0.0.1:5000/getTaskByTag", requestOptions);
+            const data = await response.json();
+            this.postId = data.id;
+            console.log(data); //data object from 
+
+            
+            for (const e of data.tasks) 
+            { //iterate over all tasks and push to 'task' array
+                tmpTaskId = e.taskId;
+                tmpTaskName = e.taskName;
+                tmpTaskDeadline = e.taskDeadline;
+                tmpTaskIsCompleted = e.taskIsCompleted;
+                tmpTaskTag = e.taskTag
+            
+                //push tasks by to array on homepage
+                this.tasksByTag.push({id: tmpTaskId, name: tmpTaskName, is_completed: tmpTaskIsCompleted, tag: tmpTaskTag, deadline: tmpTaskDeadline});
+            }
+            //console.log("TASKS BY TAG", this.tasksByTag[0]);
+        
+
         },
     
     }, 

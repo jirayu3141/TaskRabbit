@@ -369,7 +369,7 @@ def get_all_tag(user_id):
         raise InvalidAPIUsage(format(err))
 
 
-def get_task_by_tag(user_id, tag_id):
+def get_task_by_tag(user_id, tag_description):
     print(connection_string)
     try:
         cursor = db.cursor()
@@ -378,9 +378,9 @@ def get_task_by_tag(user_id, tag_id):
         SELECT task_id, tasks.description, is_completed, deadline, tags.description
         From tasks 
         LEFT JOIN tags ON tasks.tag_id = tags.tag_id
-        WHERE tags.tag_id = %s 
+        WHERE tags.description = %s 
         """
-        cursor.execute(query, (tag_id,))
+        cursor.execute(query, (tag_description,))
 
         result = cursor.fetchall()
         print(result)
