@@ -337,7 +337,6 @@ const app = Vue.createApp({
             }
             else if (tmpListStatus == 0 && tmpListId != null)
             { //success 0
-                console.log("folder '%s' (%d) is created\n", this.newFolderName, tmpFolderId);
                 this.lists.push({id: tmpListId, name: this.newListName});
             }
             
