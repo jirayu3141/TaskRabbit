@@ -312,7 +312,7 @@
             
             <div class="bar">
               <button @click="hideCompleted = !hideCompleted">
-                {{ hideCompleted ? 'Show all' : 'Hide completed' }}
+                {{ hideCompleted ? 'Show all Tasks' : 'Hide Completed' }}
               </button>
               <input v-model="newTaskName" v-on:keyup.enter="addTask" placeholder="task" />
               <input list="tags" name="tags" v-model="newTaskTag" placeholder="tag">
